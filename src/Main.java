@@ -1,11 +1,10 @@
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-    public static void main(String[] args) {
-        // Crear el monitor
+    public static void main(String[] args) throws InterruptedException {
+
         Monitor monitor = new Monitor();
 
-        // Definir las transiciones para cada proceso
         int[][] transiciones = {
                 {0},        // Importador
                 {1, 3},     // Cargador 1
@@ -18,17 +17,16 @@ public class Main {
         };
 
         int[] tiempos = {
-                    1000,    // Importador
-                    1000,    // Cargador 1
-                    1000,    // Cargador 2
-                    1000,    // Filtro 1
-                    1000,    // Filtro 2
-                    1000,    // Redimensionador 1
-                    1000,    // Redimensionador 2
-                    1000     // Exportador
+                    100,    // Importador
+                    100,    // Cargador 1
+                    100,    // Cargador 2
+                    100,    // Filtro 1
+                    100,    // Filtro 2
+                    100,    // Redimensionador 1
+                    100,    // Redimensionador 2
+                    100     // Exportador
         };
 
-        // Crear y almacenar los procesos en un array
         Proceso[] procesos = {
                 new Importador("Importador 1", transiciones[0], tiempos[0], monitor),
                 new Cargador("Cargador 1", transiciones[1], tiempos[1], monitor),
@@ -40,23 +38,16 @@ public class Main {
                 new Exportador("Exportador 1", transiciones[7], tiempos[7], monitor)
         };
 
-        // Crear e iniciar los hilos
         Thread[] hilos = new Thread[procesos.length];
         for (int i = 0; i < procesos.length; i++) {
             hilos[i] = new Thread(procesos[i]);
             hilos[i].start();
         }
 
-        // Esperar un tiempo antes de detener los procesos
         try {
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(120);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-
-        // Detener los procesos
-        for (Proceso proceso : procesos) {
-            proceso.setStop(true);
         }
 
         int[] disparos = monitor.getDisparos();

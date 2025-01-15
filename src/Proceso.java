@@ -4,27 +4,29 @@ public abstract class Proceso implements Runnable {
     protected boolean stop;
     protected final long tiempo;
     protected final int[] transiciones;
+    protected int index;
     protected final Monitor monitor;
 
     /**
      * Constructor.
-     * @param nombre tarea a realizar.
-     * @param transitions transiciones disparadas por la tarea.
-     * @param monitor monitor de la ejecución.
+     * @param nombre tarea a realizar
+     * @param transiciones transiciones disparadas por la tarea
+     * @param tiempo tiempo que demora en realizar la tarea
+     * @param monitor monitor de la ejecución
      */
-    public Proceso(String nombre, int[] transitions, long tiempo, Monitor monitor) {
+    public Proceso(String nombre, int[] transiciones, long tiempo ,Monitor monitor) {
         this.nombre = nombre;
         this.stop = false;
-        this.transiciones = transitions;
+        this.transiciones = transiciones;
+        this.index = 0;
         this.tiempo = tiempo;
         this.monitor = monitor;
     }
 
     /**
-     * Tarea realizada.
+     * Tarea a realizar.
      */
     protected abstract void tarea();
-
 
     /**
      * Detiene la ejecucion de la tarea.
@@ -32,6 +34,14 @@ public abstract class Proceso implements Runnable {
      */
     protected void setStop(boolean s) {
         this.stop = s;
+    }
+
+    /**
+     * Metodo para verificar si la tarea debe detenerse.
+     * @return True si la tarea debe detenerse.
+     */
+    protected boolean isStop() {
+        return this.stop;
     }
 
     /**
