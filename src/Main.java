@@ -17,14 +17,14 @@ public class Main {
         };
 
         int[] tiempos = {
-                    100,    // Importador
-                    100,    // Cargador 1
-                    100,    // Cargador 2
-                    100,    // Filtro 1
-                    100,    // Filtro 2
-                    100,    // Redimensionador 1
-                    100,    // Redimensionador 2
-                    100     // Exportador
+                    1,    // Importador
+                    1,    // Cargador 1
+                    1,    // Cargador 2
+                    1,    // Filtro 1
+                    1,    // Filtro 2
+                    1,    // Redimensionador 1
+                    1,    // Redimensionador 2
+                    1     // Exportador
         };
 
         Proceso[] procesos = {
@@ -45,7 +45,7 @@ public class Main {
         }
 
         try {
-            TimeUnit.SECONDS.sleep(120);
+            TimeUnit.SECONDS.sleep(60);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

@@ -38,6 +38,7 @@ public class Monitor {
 
                 //Aumenta la cuenta del disparo de esa transicion
                 setDisparo(transicion);
+                //System.out.print("T"+transicion);
 
                 /*
                     Verifica las transiciones habilitadas posterior al disparo
