@@ -14,7 +14,6 @@ public class Filtro extends Proceso {
                 TimeUnit.MILLISECONDS.sleep(tiempo);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                setStop(true);
             }
         }
     }

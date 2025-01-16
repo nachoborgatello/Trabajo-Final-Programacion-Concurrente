@@ -9,16 +9,15 @@ public class Importador extends Proceso {
     }
 
     public void tarea() {
-        int cuenta = 0;
-        while (cuenta < CANT_MAXIMA){
+        int cantImagenes = 0;
+        while (cantImagenes < CANT_MAXIMA){
             try {
                 this.monitor.dispararTransicion(transiciones[index]);
                 index = (index + 1) % transiciones.length;
                 TimeUnit.MILLISECONDS.sleep(tiempo);
-                cuenta++;
+                cantImagenes++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                setStop(true);
             }
         }
         while (!isStop());

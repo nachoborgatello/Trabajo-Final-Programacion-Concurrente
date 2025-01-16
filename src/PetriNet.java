@@ -2,16 +2,11 @@ public class PetriNet {
 
     private final int NUM_PLAZAS = 21;
     private final int NUM_TRANSICIONES = 17;
-
     private final int[][] matrizIncidencia; // Matriz de incidencia de la red de Petri
     private int[] marcado;                  // Vector de marcado de la red
     private final int[] vector;             // Vector utilizado para el calculo de la ecuacion de estado
-
     private final int[] transicionesHabilitadas;
 
-    /**
-     * Constructor. Inicializa la red de Petri con su matriz de incidencia y el marcado inicial
-     */
     public PetriNet() {
         matrizIncidencia = new int[][]{
                 // T0  T1   T2   T3   T4   T5   T6   T7   T8   T9  T10  T11  T12  T13  T14  T15  T16
@@ -55,11 +50,6 @@ public class PetriNet {
     int[] result = new int[NUM_PLAZAS];
     int[] finalResult = new int[NUM_PLAZAS];
 
-    /**
-     * Dispara una transición si esta habilitada
-     * @param transicion transición a disparar.
-     * @return true si se disparo, false en caso de que no se disparo
-     */
     public boolean disparar(int transicion) {
 
         // Verifica que la transición es válida

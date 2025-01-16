@@ -16,18 +16,13 @@ public class Monitor {
         this.disparos = new int[this.petriNet.getNUM_TRANSICIONES()];
     }
 
-    /**
-     * Metodo fundamental del monitor
-     * @param transicion transicion que un hilo pide disparar
-     */
     public void dispararTransicion(int transicion) {
 
         // Adquiere el mutex del monitor.
         try {
             mutex.acquire();
         } catch (InterruptedException e) {
-            System.err.println(e);
-            System.exit(1);
+            e.printStackTrace();
         }
 
         boolean k = true;
@@ -36,8 +31,7 @@ public class Monitor {
             k = petriNet.disparar(transicion);
             if (k){
 
-                //Aumenta la cuenta del disparo de esa transicion
-                setDisparo(transicion);
+                setDisparo(transicion); //Aumenta la cuenta del disparo de esa transicion
                 //System.out.print("T"+transicion);
 
                 /*
@@ -71,7 +65,6 @@ public class Monitor {
                     this.colas.release(transicionADisparar);
                     return;
                 }
-
                 // No hay hilos esperando en transiciones habilitadas entonces sale del monitor
                 k=false;
             }
