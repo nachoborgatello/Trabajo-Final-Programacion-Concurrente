@@ -31,11 +31,22 @@ public class Filtro extends Proceso {
 
                 // Pausa la ejecución del hilo durante el intervalo especificado (en milisegundos).
                 TimeUnit.MILLISECONDS.sleep(tiempo);
+
+                // Check the interruption
+                if (Thread.interrupted()) {
+                    throw new InterruptedException();
+                }
             } catch (InterruptedException e) {
-                // Maneja la excepción si el hilo es interrumpido durante la pausa.
-                // Imprime la traza de la excepción para depuración.
-                e.printStackTrace();
+                cleanResources();
             }
         }
+    }
+
+    /**
+     * Method for cleaning the resources. In this case, is empty
+     */
+    public void cleanResources(){
+        setStop(true);
+        return;
     }
 }

@@ -1,23 +1,29 @@
+import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 public class Monitor {
 
-    private final Semaphore mutex;      // Semáforo binario para garantizar la exclusión mutua.
-    private final PetriNet petriNet;    // Instancia de la red de Petri que se gestionará.
-    private final Colas colas;          // Estructura para gestionar las colas de espera de los hilos.
-    private final Politicas politicas;  // Define las políticas para seleccionar qué transición disparar.
-    private final int[] cantDisparos;   // Contador para registrar cuántas veces se dispara cada transición.
+    private final Semaphore mutex;          // Semáforo binario para garantizar la exclusión mutua.
+    private final PetriNet petriNet;        // Instancia de la red de Petri que se gestionará.
+    private final Colas colas;              // Estructura para gestionar las colas de espera de los hilos.
+    private final Politicas politicas;      // Define las políticas para seleccionar qué transición disparar.
+    private final double[] cantDisparos;    // Contador para registrar cuántas veces se dispara cada transición.
+    private final Log log;
+
 
     /**
      * Constructor del Monitor.
      * Inicializa los componentes necesarios para gestionar la red de Petri.
      */
-    public Monitor() {
+    public Monitor(Log log) {
         this.mutex = new Semaphore(1);
         this.petriNet = new PetriNet();
         this.colas = new Colas(this.petriNet.getCantTransiciones());
-        this.politicas = new Politicas(this.petriNet.getCantTransiciones());
-        this.cantDisparos = new int[this.petriNet.getCantTransiciones()];
+        //this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"BALANCEADA",0);
+        this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"PRIORITARIA","IZQUIERDA" ,0.8);
+        //this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"PRIORITARIA","DERECHA" ,0.7);
+        this.cantDisparos = new double[this.petriNet.getCantTransiciones()];
+        this.log = log;
     }
 
     /**
@@ -45,6 +51,13 @@ public class Monitor {
                 // Incrementa el contador de disparos para la transición actual.
                 setDisparo(transicion);
 
+                // Registra el disparos de la transición actual.
+                try {
+                    log.addTransicion(transicion);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 // Obtiene las transiciones habilitadas después del disparo.
                 int[] transicionesHabilitadas = petriNet.getTransicionesHabilitadas();
 
@@ -68,6 +81,8 @@ public class Monitor {
                     int transicionADisparar = politicas.seleccionarTransicion(transicionesBloqueadasHabilitadas, this.cantDisparos);
                     if (transicionADisparar == -1) {
                         // Si no hay ninguna transición seleccionada, libera el mutex y finaliza.
+                        // En el caso PRIORITARIO
+                        // Lo libera si la relacion 80 20 no se cumple y el unico en la cola es el T12
                         mutex.release();
                         return;
                     }
@@ -115,7 +130,7 @@ public class Monitor {
      *
      * @return Array con los contadores de disparos.
      */
-    public int[] getDisparos() {
+    public double[] getDisparos() {
         return this.cantDisparos;
     }
 }

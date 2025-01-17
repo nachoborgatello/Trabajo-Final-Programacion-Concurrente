@@ -176,19 +176,11 @@ public class PetriNet {
         }
     }
 
-    public int[] getMarcado() {
-        return marcado;
-}
-
     public int[] getTransicionesHabilitadas() {
         return transicionesHabilitadas;
     }
 
     public int getCantTransiciones() {
         return cantTransiciones;
-    }
-
-    public int getCantPlazas() {
-        return cantPlazas;
     }
 }

@@ -3,6 +3,8 @@ import java.util.concurrent.TimeUnit;
 public class Importador extends Proceso {
 
     private int cantMaxima;
+    private int cuenta;
+
     /**
      * Constructor de la clase Importador.
      *
@@ -16,6 +18,7 @@ public class Importador extends Proceso {
         // Llama al constructor de la clase padre (Proceso) para inicializar los atributos comunes.
         super(nombre, transiciones, tiempo, monitor);
         this.cantMaxima = cantMaxima;
+        this.cuenta = 0;
     }
 
     /**
@@ -24,8 +27,7 @@ public class Importador extends Proceso {
      */
     @Override
     public void run() {
-        int cuenta = 0;
-        while (cuenta < this.cantMaxima) {
+        while ((cuenta < this.cantMaxima) && (!getStop())) {
             try {
                 // Dispara la transición correspondiente al índice actual en el arreglo de transiciones.
                 this.monitor.dispararTransicion(transiciones[index]);
@@ -38,12 +40,22 @@ public class Importador extends Proceso {
 
                 // Pausa la ejecución del hilo durante el intervalo especificado (en milisegundos).
                 TimeUnit.MILLISECONDS.sleep(tiempo);
+
+                // Check the interruption
+                if (Thread.interrupted()) {
+                    throw new InterruptedException();
+                }
             } catch (InterruptedException e) {
-                // Maneja la excepción si el hilo es interrumpido durante la pausa.
-                // Imprime la traza de la excepción para depuración.
-                e.printStackTrace();
+                cleanResources();
             }
         }
-        while(!getStop());
+    }
+
+    /**
+     * Method for cleaning the resources. In this case, is empty
+     */
+    public void cleanResources(){
+        setStop(true);
+        return;
     }
 }
