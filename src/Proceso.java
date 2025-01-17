@@ -1,13 +1,21 @@
 public abstract class Proceso implements Runnable {
 
-    private String nombre;
-    protected boolean stop;                 // Variable que indica que el proceso debe detenerse
-    protected final long tiempo;            // Tiempo que demora en realizar la tarea
-    protected final int[] transiciones;     // Transiciones que dispara el proceso
-    protected int index;                    // Indica la transicion que va a disparar el proceso
-    protected final Monitor monitor;
+    private String nombre;                  // Nombre del proceso.
+    protected boolean stop;                 // Variable que indica si el proceso debe detenerse.
+    protected final long tiempo;            // Tiempo que el proceso debe esperar al realizar la tarea (en milisegundos).
+    protected final int[] transiciones;     // Arreglo de transiciones que el proceso debe manejar.
+    protected int index;                    // Índice que indica la transición actual que el proceso disparará.
+    protected final Monitor monitor;        // Objeto Monitor que sincroniza las transiciones.
 
-    public Proceso(String nombre, int[] transiciones, long tiempo ,Monitor monitor) {
+    /**
+     * Constructor de la clase Proceso.
+     *
+     * @param nombre       Nombre del proceso.
+     * @param transiciones Arreglo de transiciones que el proceso debe manejar.
+     * @param tiempo       Tiempo de espera entre tareas (en milisegundos).
+     * @param monitor      Objeto Monitor para coordinar las transiciones.
+     */
+    public Proceso(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
         this.nombre = nombre;
         this.stop = false;
         this.transiciones = transiciones;
@@ -16,18 +24,19 @@ public abstract class Proceso implements Runnable {
         this.monitor = monitor;
     }
 
-    protected abstract void tarea();
-
-    protected void setStop(boolean s) {
-        this.stop = s;
+    /**
+     * Metodo para establecer el estado de detención del proceso.
+     * @param stop Booleano que indica si el proceso debe detenerse.
+     */
+    protected void setStop(boolean stop) {
+        this.stop = stop;
     }
 
-    protected boolean isStop() {
+    /**
+     * Metodo que verifica si el proceso está detenido.
+     * @return `true` si el proceso debe detenerse, `false` en caso contrario.
+     */
+    protected boolean getStop() {
         return this.stop;
-    }
-
-    @Override
-    public void run() {
-        tarea();
     }
 }

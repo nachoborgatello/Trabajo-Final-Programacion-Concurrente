@@ -2,101 +2,120 @@ import java.util.concurrent.Semaphore;
 
 public class Monitor {
 
-    private final Semaphore mutex;
-    private final PetriNet petriNet;
-    private final Colas colas;
-    private final Politicas politicas;
-    private final int[] disparos;
+    private final Semaphore mutex;      // Semáforo binario para garantizar la exclusión mutua.
+    private final PetriNet petriNet;    // Instancia de la red de Petri que se gestionará.
+    private final Colas colas;          // Estructura para gestionar las colas de espera de los hilos.
+    private final Politicas politicas;  // Define las políticas para seleccionar qué transición disparar.
+    private final int[] cantDisparos;   // Contador para registrar cuántas veces se dispara cada transición.
 
+    /**
+     * Constructor del Monitor.
+     * Inicializa los componentes necesarios para gestionar la red de Petri.
+     */
     public Monitor() {
         this.mutex = new Semaphore(1);
         this.petriNet = new PetriNet();
-        this.colas = new Colas(this.petriNet.getNUM_TRANSICIONES());
-        this.politicas = new Politicas(this.petriNet.getNUM_TRANSICIONES());
-        this.disparos = new int[this.petriNet.getNUM_TRANSICIONES()];
+        this.colas = new Colas(this.petriNet.getCantTransiciones());
+        this.politicas = new Politicas(this.petriNet.getCantTransiciones());
+        this.cantDisparos = new int[this.petriNet.getCantTransiciones()];
     }
 
+    /**
+     * Metodo para disparar una transición en la red de Petri.
+     * Gestiona la sincronización, verifica las transiciones habilitadas,
+     * y despierta hilos bloqueados según sea necesario.
+     *
+     * @param transicion Índice de la transición que se desea disparar.
+     */
     public void dispararTransicion(int transicion) {
 
-        // Adquiere el mutex del monitor.
+        // Intenta adquirir el semáforo para entrar al monitor.
         try {
             mutex.acquire();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         boolean k = true;
 
         while (k) {
             k = petriNet.disparar(transicion);
-            if (k){
+            if (k) {
 
-                setDisparo(transicion); //Aumenta la cuenta del disparo de esa transicion
-                //System.out.print("T"+transicion);
+                // Incrementa el contador de disparos para la transición actual.
+                setDisparo(transicion);
 
-                /*
-                    Verifica las transiciones habilitadas posterior al disparo
-                    Comprueba la lista de hilos que estan esperando en las colas
-                 */
+                // Obtiene las transiciones habilitadas después del disparo.
                 int[] transicionesHabilitadas = petriNet.getTransicionesHabilitadas();
+
+                // Obtiene la lista de transiciones bloqueadas (colas con hilos esperando).
                 int[] listaBloqueadas = colas.getListaBloqueadas();
 
-                // Obtiene un listado de transiciones habilitadas y que corresponden con colas con hilos esperando
-                int[] transicionesBloqueadasHabilitadas;
-                transicionesBloqueadasHabilitadas = getTransicionesBloqueadasHabilitadas(transicionesHabilitadas, listaBloqueadas);
+                // Verifica cuáles transiciones habilitadas tienen hilos esperando.
+                int[] transicionesBloqueadasHabilitadas = getTransicionesBloqueadasHabilitadas(transicionesHabilitadas, listaBloqueadas);
 
-                // Puede pasar que en las transiciones habilitadas no haya hilos esperando
+                // Comprueba si hay hilos esperando en transiciones habilitadas.
                 boolean flag = false;
                 for (int transiciones_bloqueadas_habilitadas : transicionesBloqueadasHabilitadas) {
                     if (transiciones_bloqueadas_habilitadas == 1) {
-                        // Sale del loop con que al menos exista una transicion habilitada con hilos esperando
-                        flag = true;
+                        flag = true; // Hay al menos una transición habilitada con hilos esperando.
                         break;
                     }
                 }
 
                 if (flag) {
-                    // La politica despierta un hilo para que intente disparar la transicion
-                    int transicionADisparar = politicas.seleccionarTransicion(transicionesBloqueadasHabilitadas, this.disparos);
+                    // Selecciona una transición habilitada con hilos esperando y la despierta.
+                    int transicionADisparar = politicas.seleccionarTransicion(transicionesBloqueadasHabilitadas, this.cantDisparos);
                     if (transicionADisparar == -1) {
+                        // Si no hay ninguna transición seleccionada, libera el mutex y finaliza.
                         mutex.release();
                         return;
                     }
-                    this.colas.release(transicionADisparar);
+                    this.colas.release(transicionADisparar); // Libera un hilo de la cola correspondiente.
                     return;
                 }
-                // No hay hilos esperando en transiciones habilitadas entonces sale del monitor
-                k=false;
-            }
-            else {
-                // La transicion no esta habilitada. El hilo entra a una cola
+                // Si no hay hilos esperando en transiciones habilitadas, termina el bucle.
+                k = false;
+            } else {
+                // Si la transición no está habilitada, el hilo se bloquea en la cola correspondiente.
                 mutex.release();
-                this.colas.acquire(transicion);
-                // Cuando un hilo es despertado por otro, intenta disparar la transicion nuevamente
-                // k=true indica que retoma la ejecucion desde este punto y por ende no sale del loop, sino que ejecuta el disparo nuevamente
-                k = true;
+                this.colas.acquire(transicion); // El hilo entra en la cola de la transición.
+                k = true; // Retoma la ejecución para intentar disparar la transición nuevamente.
             }
         }
-        mutex.release();
+        mutex.release(); // Libera el semáforo al salir del monitor.
     }
 
-    private int[] getTransicionesBloqueadasHabilitadas(int[] transicionesHabilitadas, int[] listaBloqueadas){
-        // Creamos el nuevo array para guardar los resultados
-        int[] resultArray = new int[transicionesHabilitadas.length];
-
-        // Comparar ambos arrays y llenar el nuevo array
+    /**
+     * Metodo que obtiene las transiciones habilitadas que tienen hilos bloqueados esperando.
+     *
+     * @param transicionesHabilitadas Lista de transiciones habilitadas en la red.
+     * @param listaBloqueadas Lista de transiciones con hilos bloqueados.
+     * @return Array con las transiciones habilitadas que tienen hilos esperando.
+     */
+    private int[] getTransicionesBloqueadasHabilitadas(int[] transicionesHabilitadas, int[] listaBloqueadas) {
+        int[] temp = new int[transicionesHabilitadas.length];
         for (int i = 0; i < transicionesHabilitadas.length; i++) {
-            // Si en ambos arrays es 1, colocamos un 1 en el nuevo array; de lo contrario, un 0
-            resultArray[i] = (transicionesHabilitadas[i] == 1 && listaBloqueadas[i] == 1) ? 1 : 0;
+            temp[i] = (transicionesHabilitadas[i] == 1 && listaBloqueadas[i] == 1) ? 1 : 0;
         }
-        return resultArray;
+        return temp;
     }
 
-    private void setDisparo(int transicion){
-        disparos[transicion] += 1;
+    /**
+     * Incrementa el contador de disparos para una transición específica.
+     *
+     * @param transicion Índice de la transición.
+     */
+    private void setDisparo(int transicion) {
+        cantDisparos[transicion] += 1;
     }
 
-    public int[] getDisparos(){
-        return this.disparos;
+    /**
+     * Devuelve el número de veces que se ha disparado cada transición.
+     *
+     * @return Array con los contadores de disparos.
+     */
+    public int[] getDisparos() {
+        return this.cantDisparos;
     }
 }
