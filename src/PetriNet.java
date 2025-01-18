@@ -39,7 +39,7 @@ public class PetriNet {
         };
 
         // Define la cantidad de plazas y transiciones de la red
-        this.cantPlazas = this.matrizIncidencia.length;;
+        this.cantPlazas = this.matrizIncidencia.length;
         this.cantTransiciones = this.matrizIncidencia[0].length;
 
         // Define el marcado inicial de la red.
@@ -97,6 +97,7 @@ public class PetriNet {
 
             // Verifica los invariantes de plaza.
             if (verificarInvariantesPlaza(nuevoMarcado)) {
+                System.out.println("Se corrompieron los invariantes de plaza.");
                 return false;
             }
 
@@ -136,6 +137,16 @@ public class PetriNet {
      * @return `true` si los invariantes no se cumplen, `false` si son válidos.
      */
     public boolean verificarInvariantesPlaza(int[] marcado) {
+        /*
+            P1 + P2 = 1
+            P4 + P5 = 1
+            P2 + P3 + P4 + P19 = 3
+            P7 + P8 + P12 = 1
+            P10 + P11 + P13 = 1
+            P8 + P9 + P10 + P12 + P13 = 2
+            P15 + P16 + P17 = 1
+            P19 + P20 = 1
+         */
         if (marcado[1] + marcado[2] != 1) {
             return true;
         } else if (marcado[4] + marcado[5] != 1) {
@@ -150,10 +161,7 @@ public class PetriNet {
             return true;
         } else if (marcado[15] + marcado[16] + marcado[17] != 1) {
             return true;
-        } else if (marcado[19] + marcado[20] != 1) {
-            return true;
-        }
-        return false;
+        } else return marcado[19] + marcado[20] != 1;
     }
 
     /**

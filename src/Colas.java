@@ -1,11 +1,11 @@
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
+import java.util.ArrayList;
 
 public class Colas {
 
-    private final int cantColas;            // Cantidad de colas, equivalente al número de transiciones.
-    private int[] listaBloqueadas;          // Arreglo que indica si hay hilos bloqueados en cada cola (1 = bloqueado, 0 = no bloqueado).
-    private ArrayList<Semaphore> colas;     // Lista de semáforos, donde cada semáforo representa una cola.
+    private final int[] listaBloqueadas;          // Arreglo que indica si hay hilos bloqueados en cada cola (1 = bloqueado, 0 = no bloqueado).
+    private final ArrayList<Semaphore> colas;     // Lista de semáforos, donde cada semáforo representa una cola.
 
     /**
      * Constructor de la clase Colas.
@@ -14,19 +14,17 @@ public class Colas {
      * @param n Número de transiciones (y por lo tanto, número de colas).
      */
     public Colas(int n) {
-        this.cantColas = n;
-        this.colas = new ArrayList<Semaphore>(n);
+        // Cantidad de colas, equivalente al número de transiciones.
+        this.colas = new ArrayList<>(n);
         this.listaBloqueadas = new int[n];
 
         // Inicializa los semáforos para cada cola con el valor inicial en 0.
-        for (int i = 0; i < this.cantColas; i++) {
+        for (int i = 0; i < n; i++) {
             this.colas.add(new Semaphore(0));
         }
 
         // Inicializa la lista de bloqueadas con todos los valores en 0 (ningún hilo bloqueado inicialmente).
-        for (int j = 0; j < this.listaBloqueadas.length; j++) {
-            this.listaBloqueadas[j] = 0;
-        }
+        Arrays.fill(this.listaBloqueadas, 0);
     }
 
     /**

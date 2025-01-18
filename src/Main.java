@@ -19,14 +19,16 @@ public class Main {
 
         // Crear y ejecutar un hilo para cada proceso.
         Thread[] hilos = new Thread[procesos.length];
+        ExceptionHandler handler = new ExceptionHandler();
         for (int i = 0; i < procesos.length; i++) {
             hilos[i] = new Thread(procesos[i]);
+            hilos[i].setUncaughtExceptionHandler(handler);
             hilos[i].start();
         }
 
         // Ejecutar los procesos durante un tiempo determinado (60 segundos).
         try {
-            TimeUnit.SECONDS.sleep(60);
+            TimeUnit.SECONDS.sleep(30);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -60,6 +62,18 @@ public class Main {
     }
 
     private static Proceso[] getProcesos(Monitor monitor) {
+        String[] nombres = {
+                "Importador-1",
+                "Cargador-1",
+                "Cargador-2",
+                "Filtro-1",
+                "Filtro-2",
+                "Redimensionador-1",
+                "Redimensionador-2",
+                "Exportador-1"
+        };
+
+
         int[][] transiciones = {
                 {0},        // Importador
                 {1, 3},     // Cargador 1
@@ -71,32 +85,31 @@ public class Main {
                 {15, 16}    // Exportador
         };
 
-        // Tiempos de espera (simulados) para cada proceso.
+        // Tiempos de espera (simulados) para cada proceso (en milisegundos).
         int[] tiempos = {
-                3,    // Importador
+                8,    // Importador
                 5,    // Cargador 1
                 5,    // Cargador 2
-                2,    // Filtro 1
-                2,    // Filtro 2
-                4,    // Redimensionador 1
-                4,    // Redimensionador 2
-                10     // Exportador
+                3,    // Filtro 1
+                3,    // Filtro 2
+                5,    // Redimensionador 1
+                5,    // Redimensionador 2
+                7     // Exportador
         };
 
         // Parámetro adicional para el Importador.
-        int capacidadImportador = 1000;
+        int capacidadImportador = 200;
 
         // Creación de los procesos.
-        Proceso[] procesos = {
-                new Importador("Importador 1", transiciones[0], tiempos[0], monitor, capacidadImportador),
-                new Cargador("Cargador 1", transiciones[1], tiempos[1], monitor),
-                new Cargador("Cargador 2", transiciones[2], tiempos[2], monitor),
-                new Filtro("Filtro 1", transiciones[3], tiempos[3], monitor),
-                new Filtro("Filtro 2", transiciones[4], tiempos[4], monitor),
-                new Redimensionador("Redimensionador 1", transiciones[5], tiempos[5], monitor),
-                new Redimensionador("Redimensionador 2", transiciones[6], tiempos[6], monitor),
-                new Exportador("Exportador 1", transiciones[7], tiempos[7], monitor)
+        return new Proceso[]{
+                new Importador(nombres[0], transiciones[0], tiempos[0], monitor, capacidadImportador),
+                new Cargador(nombres[1], transiciones[1], tiempos[1], monitor),
+                new Cargador(nombres[2], transiciones[2], tiempos[2], monitor),
+                new Filtro(nombres[3], transiciones[3], tiempos[3], monitor),
+                new Filtro(nombres[4], transiciones[4], tiempos[4], monitor),
+                new Redimensionador(nombres[5], transiciones[5], tiempos[5], monitor),
+                new Redimensionador(nombres[6], transiciones[6], tiempos[6], monitor),
+                new Exportador(nombres[7], transiciones[7], tiempos[7], monitor)
         };
-        return procesos;
     }
 }

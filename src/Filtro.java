@@ -46,7 +46,6 @@ public class Filtro extends Proceso {
      * Method for cleaning the resources. In this case, is empty
      */
     public void cleanResources(){
-        setStop(true);
-        return;
+        setStop();
     }
 }

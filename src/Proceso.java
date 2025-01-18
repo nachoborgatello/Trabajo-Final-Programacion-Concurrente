@@ -1,6 +1,6 @@
 public abstract class Proceso implements Runnable {
 
-    private String nombre;                  // Nombre del proceso.
+    private final String nombre;            // Nombre del proceso.
     protected boolean stop;                 // Variable que indica si el proceso debe detenerse.
     protected final long tiempo;            // Tiempo que el proceso debe esperar al realizar la tarea (en milisegundos).
     protected final int[] transiciones;     // Arreglo de transiciones que el proceso debe manejar.
@@ -26,10 +26,9 @@ public abstract class Proceso implements Runnable {
 
     /**
      * Metodo para establecer el estado de detención del proceso.
-     * @param stop Booleano que indica si el proceso debe detenerse.
      */
-    protected void setStop(boolean stop) {
-        this.stop = stop;
+    protected void setStop() {
+        this.stop = true;
     }
 
     /**

@@ -19,9 +19,7 @@ public class Monitor {
         this.mutex = new Semaphore(1);
         this.petriNet = new PetriNet();
         this.colas = new Colas(this.petriNet.getCantTransiciones());
-        //this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"BALANCEADA",0);
-        this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"PRIORITARIA","IZQUIERDA" ,0.8);
-        //this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"PRIORITARIA","DERECHA" ,0.7);
+        this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"BALANCEADA","",0);
         this.cantDisparos = new double[this.petriNet.getCantTransiciones()];
         this.log = log;
     }
