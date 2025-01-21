@@ -2,7 +2,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Importador extends Proceso {
 
-    private int cantMaxima;
+    private final int cantMaxima;
     private int cuenta;
 
     /**
@@ -27,34 +27,21 @@ public class Importador extends Proceso {
      */
     @Override
     public void run() {
-        while ((cuenta < this.cantMaxima) && (!getStop())) {
+        while (this.cuenta<this.cantMaxima) {
+            // Dispara la transición correspondiente al índice actual en el arreglo de transiciones.
+            this.monitor.dispararTransicion(transiciones[index]);
+
+            // Actualiza el índice para avanzar a la siguiente transición de forma cíclica.
+            index = (index + 1) % transiciones.length;
+
+            // Aumenta la cuenta de imagenes importadas al sistema.
+            this.cuenta++;
+
             try {
-                // Dispara la transición correspondiente al índice actual en el arreglo de transiciones.
-                this.monitor.dispararTransicion(transiciones[index]);
-
-                // Actualiza el índice para avanzar a la siguiente transición de forma cíclica.
-                index = (index + 1) % transiciones.length;
-
-                // Aumenta la cuenta de imagenes importadas al sistema.
-                cuenta++;
-
-                // Pausa la ejecución del hilo durante el intervalo especificado (en milisegundos).
                 TimeUnit.MILLISECONDS.sleep(tiempo);
-
-                // Check the interruption
-                if (Thread.interrupted()) {
-                    throw new InterruptedException();
-                }
             } catch (InterruptedException e) {
-                cleanResources();
+                throw new RuntimeException(e);
             }
         }
-    }
-
-    /**
-     * Method for cleaning the resources. In this case, is empty
-     */
-    public void cleanResources(){
-        setStop();
     }
 }

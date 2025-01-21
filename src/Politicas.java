@@ -21,7 +21,7 @@ public class Politicas {
         } else {
             this.tipo = tipo;
         }
-        if (!Objects.equals(tipo, "DERECHA") && !Objects.equals(tipo, "IZQUIERDA")){
+        if (!Objects.equals(segmento, "DERECHA") && !Objects.equals(segmento, "IZQUIERDA")){
             this.segmento = "";
         } else {
             this.segmento = segmento;

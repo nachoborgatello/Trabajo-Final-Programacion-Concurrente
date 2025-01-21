@@ -21,31 +21,18 @@ public class Cargador extends Proceso {
      */
     @Override
     public void run() {
-        while (!getStop()) {
+        while (!this.stop) {
+            // Dispara la transición correspondiente al índice actual en el arreglo de transiciones.
+            this.monitor.dispararTransicion(transiciones[index]);
+
+            // Actualiza el índice para avanzar a la siguiente transición de forma cíclica.
+            index = (index + 1) % transiciones.length;
+
             try {
-                // Dispara la transición correspondiente al índice actual en el arreglo de transiciones.
-                this.monitor.dispararTransicion(transiciones[index]);
-
-                // Actualiza el índice para avanzar a la siguiente transición de forma cíclica.
-                index = (index + 1) % transiciones.length;
-
-                // Pausa la ejecución del hilo durante el intervalo especificado (en milisegundos).
                 TimeUnit.MILLISECONDS.sleep(tiempo);
-
-                // Check the interruption
-                if (Thread.interrupted()) {
-                    throw new InterruptedException();
-                }
             } catch (InterruptedException e) {
-                cleanResources();
+                throw new RuntimeException(e);
             }
         }
-    }
-
-    /**
-     * Method for cleaning the resources. In this case, is empty
-     */
-    public void cleanResources(){
-        setStop();
     }
 }

@@ -5,17 +5,21 @@ public class Main {
     public static void main(String[] args) {
 
         Log log;
+        String path = "log/log.txt";
         try {
-            log = new Log("log/log.txt");
+            log = new Log(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        // Cantidad de invariantes de transicion a cumplir durante la ejecucion del programa.
+        int cantMaxima = 200;
 
         // Crear la instancia del Monitor que gestiona las transiciones.
         Monitor monitor = new Monitor(log);
 
         // Definición de las transiciones asociadas a cada proceso.
-        Proceso[] procesos = getProcesos(monitor);
+        Proceso[] procesos = getProcesos(cantMaxima,monitor);
 
         // Crear y ejecutar un hilo para cada proceso.
         Thread[] hilos = new Thread[procesos.length];
@@ -26,11 +30,13 @@ public class Main {
             hilos[i].start();
         }
 
-        // Ejecutar los procesos durante un tiempo determinado (60 segundos).
-        try {
-            TimeUnit.SECONDS.sleep(30);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        // Verificamos que se cumplan todos los invariantes de transicion.
+        while (monitor.getDisparos()[16]!=cantMaxima){
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // Interrumpimos los procesos.
@@ -61,7 +67,7 @@ public class Main {
         }
     }
 
-    private static Proceso[] getProcesos(Monitor monitor) {
+    private static Proceso[] getProcesos(int cantMaxima, Monitor monitor) {
         String[] nombres = {
                 "Importador-1",
                 "Cargador-1",
@@ -72,7 +78,6 @@ public class Main {
                 "Redimensionador-2",
                 "Exportador-1"
         };
-
 
         int[][] transiciones = {
                 {0},        // Importador
@@ -87,22 +92,21 @@ public class Main {
 
         // Tiempos de espera (simulados) para cada proceso (en milisegundos).
         int[] tiempos = {
-                8,    // Importador
-                5,    // Cargador 1
-                5,    // Cargador 2
-                3,    // Filtro 1
-                3,    // Filtro 2
-                5,    // Redimensionador 1
-                5,    // Redimensionador 2
-                7     // Exportador
+                1,    // Importador
+                1,    // Cargador 1
+                1,    // Cargador 2
+                1,    // Filtro 1
+                1,    // Filtro 2
+                1,    // Redimensionador 1
+                1,    // Redimensionador 2
+                1     // Exportador
         };
 
         // Parámetro adicional para el Importador.
-        int capacidadImportador = 200;
 
         // Creación de los procesos.
         return new Proceso[]{
-                new Importador(nombres[0], transiciones[0], tiempos[0], monitor, capacidadImportador),
+                new Importador(nombres[0], transiciones[0], tiempos[0], monitor, cantMaxima),
                 new Cargador(nombres[1], transiciones[1], tiempos[1], monitor),
                 new Cargador(nombres[2], transiciones[2], tiempos[2], monitor),
                 new Filtro(nombres[3], transiciones[3], tiempos[3], monitor),

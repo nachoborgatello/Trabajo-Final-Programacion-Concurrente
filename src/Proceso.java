@@ -23,19 +23,4 @@ public abstract class Proceso implements Runnable {
         this.tiempo = tiempo;
         this.monitor = monitor;
     }
-
-    /**
-     * Metodo para establecer el estado de detención del proceso.
-     */
-    protected void setStop() {
-        this.stop = true;
-    }
-
-    /**
-     * Metodo que verifica si el proceso está detenido.
-     * @return `true` si el proceso debe detenerse, `false` en caso contrario.
-     */
-    protected boolean getStop() {
-        return this.stop;
-    }
 }
