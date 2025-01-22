@@ -13,7 +13,6 @@ public class Monitor {
 
     /**
      * Constructor del Monitor.
-     *
      * Inicializa los componentes necesarios para gestionar la red de Petri.
      */
     public Monitor(Log log) {
@@ -118,7 +117,7 @@ public class Monitor {
                     k=true;
                 } else if (this.petriNet.getFlagsVentanaTiempo()[transicion]==2) {
                     // 3. El tiempo beta ha sido superado, lo que impide volver a disparar la transición.
-                   throw new RuntimeException("Fuera de la ventana de tiempos");
+                    throw new RuntimeException("Fuera de la ventana de tiempos");
                 }
             }
         }

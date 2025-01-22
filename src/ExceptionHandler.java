@@ -10,7 +10,6 @@ public class ExceptionHandler implements UncaughtExceptionHandler {
      */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        /*
         // Imprimir un mensaje indicando que se capturó una excepción
         System.out.println("Se ha capturado una excepción");
 
@@ -26,6 +25,5 @@ public class ExceptionHandler implements UncaughtExceptionHandler {
 
         // Imprimir el estado actual del hilo donde ocurrió la excepción
         System.out.printf("Estado del hilo: %s\n", t.getState());
-         */
     }
 }

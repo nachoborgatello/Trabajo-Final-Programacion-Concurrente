@@ -29,6 +29,5 @@ public class Log {
             throw new IOException("El archivo no está abierto");
         }
         writer.write("T" + n);  // Escribe la transición en el archivo (ejemplo: "T1", "T2")
-        //writer.newLine();         // Agrega un salto de línea
     }
 }
