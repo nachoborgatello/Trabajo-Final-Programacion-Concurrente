@@ -1,3 +1,5 @@
+package src;
+
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +14,7 @@ public class Monitor {
     private final Log log;
 
     /**
-     * Constructor del Monitor.
+     * Constructor del src.Monitor.
      * Inicializa los componentes necesarios para gestionar la red de Petri.
      */
     public Monitor(Log log) {
@@ -20,7 +22,7 @@ public class Monitor {
         this.petriNet = new PetriNet();
         this.colas = new Colas(this.petriNet.getCantTransiciones());
         this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"BALANCEADA","",0);
-        //this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"PRIORITARIA","DERECHA",0.8);
+        //this.politicas = new src.Politicas(this.petriNet.getCantTransiciones(),"PRIORITARIA","DERECHA",0.8);
         this.cantDisparos = new double[this.petriNet.getCantTransiciones()];
         this.log = log;
     }
@@ -56,7 +58,8 @@ public class Monitor {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                //System.out.printf("Se disparo la transicion %d\n",transicion);
+
+                System.out.printf("Se disparo la transicion %d\n",transicion);
 
                 // Obtiene las transiciones habilitadas después del disparo.
                 int[] transicionesHabilitadas = petriNet.getTransicionesHabilitadas();
@@ -117,6 +120,9 @@ public class Monitor {
                     k=true;
                 } else if (this.petriNet.getFlagsVentanaTiempo()[transicion]==2) {
                     // 3. El tiempo beta ha sido superado, lo que impide volver a disparar la transición.
+                    System.out.printf("Se intento disparar la transicion %d\n",transicion);
+                    long ahora = System.currentTimeMillis();
+                    System.out.println(ahora-this.petriNet.getVectorTiempos()[transicion]);
                     throw new RuntimeException("Fuera de la ventana de tiempos");
                 }
             }

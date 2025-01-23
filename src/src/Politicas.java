@@ -1,3 +1,5 @@
+package src;
+
 import java.util.Objects;
 
 public class Politicas {
@@ -10,7 +12,7 @@ public class Politicas {
     private final double prioridad;
 
     /**
-     * Constructor de la clase Politicas.
+     * Constructor de la clase src.Politicas.
      *
      * @param cantTransiciones Número total de transiciones en el sistema.
      */

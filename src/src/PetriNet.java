@@ -1,3 +1,5 @@
+package src;
+
 public class PetriNet {
 
     private final int[][] matrizIncidencia;                 // Matriz de incidencia que define los pesos de los arcos entre plazas y transiciones.
@@ -13,7 +15,7 @@ public class PetriNet {
                                                             // 0: Indica que la transicion esta dentro de la ventana, 1: Indica que se intento disparar antes de Alfa, 2: Indica que se disparo luego de Beta.
 
     /**
-     * Constructor de la clase PetriNet.
+     * Constructor de la clase src.PetriNet.
      * Define la matriz de incidencia, el marcado inicial, el vector de disparo y las transiciones habilitadas.
      */
     public PetriNet() {
@@ -59,7 +61,7 @@ public class PetriNet {
 
         //Las transiciones {T0, T3, T4, T7, T8, T9, T10, T13, T14, T16} son transiciones temporales.
 
-        matrizTiempos = new long[][] {
+/*        matrizTiempos = new long[][] {
                 // alfa, beta
                 {-1,9223372036854775807L},
                 {-1,9223372036854775807L},
@@ -77,29 +79,27 @@ public class PetriNet {
                 {-1,9223372036854775807L},
                 {-1,9223372036854775807L},
                 {-1,9223372036854775807L},
-                {-1,9223372036854775807L},
+                {-1,9223372036854775807L},*/
 
-        /*
         matrizTiempos = new long[][] {
                 // alfa, beta
-                {10L,3000L},
+                {100L,300L},
                 {-1,9223372036854775807L},
                 {-1,9223372036854775807L},
-                {10L,3000L},
-                {10L,3000L},
+                {100L,300L},
+                {100L,300L},
                 {-1,9223372036854775807L},
                 {-1,9223372036854775807L},
-                {10L,3000L},
-                {10L,3000L},
-                {10L,3000L},
-                {10L,3000L},
+                {100L,300L},
+                {100L,300L},
+                {100L,300L},
+                {100L,300L},
                 {-1,9223372036854775807L},
                 {-1,9223372036854775807L},
-                {10L,3000L},
-                {10L,3000L},
+                {100L,300L},
+                {100L,300L},
                 {-1,9223372036854775807L},
-                {10L,3000L},
-        */
+                {100L,300L},
         };
 
         vectorTiempos = new long[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -117,6 +117,7 @@ public class PetriNet {
      * @return `true` si el disparo fue exitoso, `false` si no se pudo disparar.
      */
     public boolean disparar(int transicion) {
+
         // Verifica si la transición es válida.
         if (transicion < 0 || transicion >= cantTransiciones) {
             throw new IllegalArgumentException("Índice de transición inválido");
@@ -160,8 +161,7 @@ public class PetriNet {
 
                 // Verifica los invariantes de plaza.
                 if (verificarInvariantesPlaza(nuevoMarcado)) {
-                    System.out.println("Se corrompieron los invariantes de plaza.");
-                    return false;
+                    throw new RuntimeException("Se corrompieron los invariantes de plaza.");
                 }
 
                 // Actualiza el marcado y las transiciones habilitadas según los tokens disponibles.
@@ -258,6 +258,9 @@ public class PetriNet {
                 } else if (transicionesHabilitadasAnteriores[i] == 1 && transicionesHabilitadas[i] == 0) {
                     // Transición deshabilitada
                     vectorTiempos[i] = 0L;
+                } else if (i == 0) {
+                    // Caso particular de T0
+                    vectorTiempos[i] = System.currentTimeMillis();
                 }
             }
         }
@@ -286,6 +289,7 @@ public class PetriNet {
                 return true;
             }
             flagsVentanaTiempo[transicion]=2;
+            return false;
         }
         flagsVentanaTiempo[transicion]=1;
         return false;
