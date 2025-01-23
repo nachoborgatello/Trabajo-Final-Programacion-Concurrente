@@ -59,7 +59,7 @@ public class Monitor {
                     throw new RuntimeException(e);
                 }
 
-                System.out.printf("Se disparo la transicion %d\n",transicion);
+                //System.out.printf("Se disparo la transicion %d\n",transicion);
 
                 // Obtiene las transiciones habilitadas después del disparo.
                 int[] transicionesHabilitadas = petriNet.getTransicionesHabilitadas();
@@ -137,7 +137,7 @@ public class Monitor {
      * @param listaBloqueadas Lista de transiciones con hilos bloqueados.
      * @return Array con las transiciones habilitadas que tienen hilos esperando.
      */
-    private int[] getTransicionesBloqueadasHabilitadas(int[] transicionesHabilitadas, int[] listaBloqueadas) {
+    public int[] getTransicionesBloqueadasHabilitadas(int[] transicionesHabilitadas, int[] listaBloqueadas) {
         int[] temp = new int[transicionesHabilitadas.length];
         for (int i = 0; i < transicionesHabilitadas.length; i++) {
             temp[i] = (transicionesHabilitadas[i] == 1 && listaBloqueadas[i] == 1) ? 1 : 0;
@@ -161,5 +161,21 @@ public class Monitor {
      */
     public double[] getDisparos() {
         return this.cantDisparos;
+    }
+
+    public Semaphore getMutex() {
+        return mutex;
+    }
+
+    public PetriNet getPetriNet() {
+        return petriNet;
+    }
+
+    public Colas getColas() {
+        return colas;
+    }
+
+    public Politicas getPoliticas() {
+        return politicas;
     }
 }

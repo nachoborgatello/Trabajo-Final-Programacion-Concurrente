@@ -16,7 +16,7 @@ public class Politicas {
      *
      * @param cantTransiciones Número total de transiciones en el sistema.
      */
-    Politicas(int cantTransiciones, String tipo, String segmento, double prioridad) {
+    public Politicas(int cantTransiciones, String tipo, String segmento, double prioridad) {
         this.cantTransiciones = cantTransiciones;
         if (!Objects.equals(tipo, "BALANCEADA") && !Objects.equals(tipo, "PRIORITARIA")){
             this.tipo = "BALANCEADA";
@@ -67,7 +67,7 @@ public class Politicas {
                     Política de procesamiento que prioriza un segmento en la etapa 3.
                     Este segmento incluye las transiciones T11, T12, T13 y T14.
                 */
-                int j=0;
+                int j=0;    // Usado en el bucle siguiente para omitir la eleccion de las transiciones prioritarias.
                 if(Objects.equals(this.segmento, "IZQUIERDA")){
                     j=12;
                     if(transicionesHabilitadas[12]==1 && disparos[11]!=0){
@@ -102,5 +102,17 @@ public class Politicas {
                 System.out.println("Política inválida.");
         }
         return transicionSeleccionada;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public double getPrioridad() {
+        return prioridad;
+    }
+
+    public String getSegmento() {
+        return segmento;
     }
 }

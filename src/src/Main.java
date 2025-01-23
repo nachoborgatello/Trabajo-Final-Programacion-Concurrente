@@ -23,7 +23,7 @@ public class Main {
         }
 
         // Cantidad de invariantes de transicion a cumplir durante la ejecucion del programa.
-        int cantMaxima = 1000;
+        int cantMaxima = 200;
 
         // Crear la instancia del src.Monitor que gestiona las transiciones.
         Monitor monitor = new Monitor(log);
@@ -63,8 +63,8 @@ public class Main {
 
         // Obtener y mostrar la cantidad de disparos por transición.
         double[] disparos = monitor.getDisparos();
-        System.out.println("\nResultados:");
-        System.out.printf("\nCantidad de invariantes: %d\n",cantMaxima);
+        System.out.println("Resultados:");
+        System.out.printf("Cantidad de invariantes: %d\n",cantMaxima);
         for (int i = 0; i < disparos.length; i++) {
             System.out.printf("La transición %d se disparó %d veces.%n", i, (int) disparos[i]);
         }
@@ -82,14 +82,14 @@ public class Main {
 
     private static Proceso[] getProcesos(int cantMaxima, Monitor monitor) {
         String[] nombres = {
-                "src.Importador-1",
-                "src.Cargador-1",
-                "src.Cargador-2",
-                "src.Filtro-1",
-                "src.Filtro-2",
-                "src.Redimensionador-1",
-                "src.Redimensionador-2",
-                "src.Exportador-1"
+                "Importador-1",
+                "Cargador-1",
+                "Cargador-2",
+                "Filtro-1",
+                "Filtro-2",
+                "Redimensionador-1",
+                "Redimensionador-2",
+                "Exportador-1"
         };
 
         int[][] transiciones = {
@@ -108,11 +108,11 @@ public class Main {
                 100,    // src.Importador
                 100,    // src.Cargador 1
                 100,    // src.Cargador 2
-                100,    // src.Filtro 1
-                100,    // src.Filtro 2
+                80,    // src.Filtro 1
+                80,    // src.Filtro 2
                 100,    // src.Redimensionador 1
                 100,    // src.Redimensionador 2
-                100     // src.Exportador
+                50     // src.Exportador
         };
 
         // Creación de los procesos.
