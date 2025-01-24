@@ -61,7 +61,7 @@ public class PetriNet {
 
         //Las transiciones {T0, T3, T4, T7, T8, T9, T10, T13, T14, T16} son transiciones temporales.
 
-/*        matrizTiempos = new long[][]{
+       matrizTiempos = new long[][]{
                 // alfa, beta
                 {-1, 9223372036854775807L},
                 {-1, 9223372036854775807L},
@@ -80,8 +80,8 @@ public class PetriNet {
                 {-1, 9223372036854775807L},
                 {-1, 9223372036854775807L},
                 {-1, 9223372036854775807L},
-            };*/
-
+            };
+/*
         matrizTiempos = new long[][] {
                 // alfa, beta
                 {100L,300L},
@@ -102,7 +102,7 @@ public class PetriNet {
                 {-1,9223372036854775807L},
                 {1L,200L},
         };
-
+*/
         vectorTiempos = new long[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         flagsVentanaTiempo = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -161,14 +161,14 @@ public class PetriNet {
                 }
 
                 // Verifica los invariantes de plaza.
-                if (verificarInvariantesPlaza(nuevoMarcado)) {
+                if (!verificarInvariantesPlaza(nuevoMarcado)) {
+                    // Actualiza el marcado y las transiciones habilitadas según los tokens disponibles.
+                    actualizarHabilitadas(nuevoMarcado);
+
+                    return true;
+                } else {
                     throw new RuntimeException("Se corrompieron los invariantes de plaza.");
                 }
-
-                // Actualiza el marcado y las transiciones habilitadas según los tokens disponibles.
-                actualizarHabilitadas(nuevoMarcado);
-
-                return true;
             }
         }
         return false;

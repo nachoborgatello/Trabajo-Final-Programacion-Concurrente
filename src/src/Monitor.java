@@ -88,12 +88,14 @@ public class Monitor {
                         // Lo libera si la relacion 80 20 no se cumple y el unico en la cola es el T12
                         mutex.release();
                         return;
+                    } else {
+                        this.colas.release(transicionADisparar); // Libera un hilo de la cola correspondiente.
+                        return;
                     }
-                    this.colas.release(transicionADisparar); // Libera un hilo de la cola correspondiente.
-                    return;
+                } else {
+                    // Si no hay hilos esperando en transiciones habilitadas, termina el bucle.
+                    k = false;
                 }
-                // Si no hay hilos esperando en transiciones habilitadas, termina el bucle.
-                k = false;
             } else {
                 /*
                     Si la transición no fue disparada, puede deberse a las siguientes razones:
