@@ -10,7 +10,7 @@ public class Colas {
     private final ArrayList<Semaphore> colas;     // Lista de semáforos, donde cada semáforo representa una cola.
 
     /**
-     * Constructor de la clase src.Colas.
+     * Constructor de la clase Colas.
      * Inicializa la cantidad de colas y crea una lista de semáforos asociada a cada transición.
      *
      * @param n Número de transiciones (y por lo tanto, número de colas).

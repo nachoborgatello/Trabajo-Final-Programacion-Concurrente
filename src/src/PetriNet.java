@@ -12,7 +12,7 @@ public class PetriNet {
     private final long[] vectorTiempos;                     // Vector que guarda el tiempo en que se habilito una transicion temporal.
     private final long[][] matrizTiempos;                   // Matriz con los valores de Alfa (columna 0) y Beta (columna 1) para todas las transiciones
     private final int[] flagsVentanaTiempo;                 // Vector utilizado para el calculo de la ventana de tiempo:
-                                                            // 0: Indica que la transicion esta dentro de la ventana, 1: Indica que se intento disparar antes de Alfa, 2: Indica que se disparo luego de Beta.
+    // 0: Indica que la transicion esta dentro de la ventana, 1: Indica que se intento disparar antes de Alfa, 2: Indica que se disparo luego de Beta.
 
     /**
      * Constructor de la clase src.PetriNet.
@@ -61,53 +61,51 @@ public class PetriNet {
 
         //Las transiciones {T0, T3, T4, T7, T8, T9, T10, T13, T14, T16} son transiciones temporales.
 
-       matrizTiempos = new long[][]{
+        matrizTiempos = new long[][]{
                 // alfa, beta
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-                {-1, 9223372036854775807L},
-            };
-/*
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+                {-1L, 9223372036854775807L},
+        };
+        /*
         matrizTiempos = new long[][] {
                 // alfa, beta
                 {100L,300L},
-                {-1,9223372036854775807L},
-                {-1,9223372036854775807L},
+                {-1L,9223372036854775807L},
+                {-1L,9223372036854775807L},
                 {100L,300L},
                 {100L,300L},
-                {-1,9223372036854775807L},
-                {-1,9223372036854775807L},
+                {-1L,9223372036854775807L},
+                {-1L,9223372036854775807L},
                 {200L,300L},
                 {200L,300L},
                 {200L,300L},
                 {200L,300L},
-                {-1,9223372036854775807L},
-                {-1,9223372036854775807L},
+                {-1L,9223372036854775807L},
+                {-1L,9223372036854775807L},
                 {100L,300L},
                 {100L,300L},
-                {-1,9223372036854775807L},
+                {-1L,9223372036854775807L},
                 {1L,200L},
         };
-*/
+        */
         vectorTiempos = new long[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         flagsVentanaTiempo = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-        // Inicializa las transiciones habilitadas.
-        // De esta manera T0 puede considerarse temporal en el primer disparo.
+        // Inicializa las transiciones habilitadas. De esta manera T0 puede considerarse temporal en el primer disparo.
         actualizarHabilitadas(this.marcado);
     }
 

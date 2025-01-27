@@ -68,23 +68,26 @@ public class Politicas {
                     Este segmento incluye las transiciones T11, T12, T13 y T14.
                 */
                 int j=0;    // Usado en el bucle siguiente para omitir la eleccion de las transiciones prioritarias.
+
                 if(Objects.equals(this.segmento, "IZQUIERDA")){
                     j=12;
-                    if(transicionesHabilitadas[12]==1 && disparos[11]!=0){
-                        double relacion = disparos[12]/disparos[11];
+                    if(transicionesHabilitadas[j]==1 && disparos[j-1]!=0){
+                        double relacion = disparos[j]/disparos[j-1];
                         if (relacion<(1-prioridad)){
                             return 12;
                         }
                     }
                 } else if (Objects.equals(this.segmento, "DERECHA")){
                     j=11;
-                    if(transicionesHabilitadas[11]==1 && disparos[12]!=0){
-                        double relacion = disparos[11]/disparos[12];
+                    if(transicionesHabilitadas[j]==1 && disparos[j+1]!=0){
+                        double relacion = disparos[j]/disparos[j+1];
                         if (relacion<(1-prioridad)){
                             return 11;
                         }
                     }
                 }
+
+
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
                 // Esta etapa es igual a la Politica BALANCEADA.
                 for (int i = 1; i < this.cantTransiciones; i++) {

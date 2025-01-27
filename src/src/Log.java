@@ -2,7 +2,7 @@ package src;
 
 import java.io.*;
 
-// Clase src.Log para manejar un archivo de registro
+// Clase Log para manejar un archivo de registro
 public class Log {
     private BufferedWriter writer;  // Escritor de archivos para agregar datos al archivo
     private final String filePath;  // Ruta del archivo de registro

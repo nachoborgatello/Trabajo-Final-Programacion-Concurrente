@@ -23,7 +23,7 @@ public class Main {
         }
 
         // Cantidad de invariantes de transicion a cumplir durante la ejecucion del programa.
-        int cantMaxima = 200;
+        int cantMaxima = 5;
 
         // Crear la instancia del src.Monitor que gestiona las transiciones.
         Monitor monitor = new Monitor(log);

@@ -14,7 +14,7 @@ public class Monitor {
     private final Log log;
 
     /**
-     * Constructor del src.Monitor.
+     * Constructor del Monitor.
      * Inicializa los componentes necesarios para gestionar la red de Petri.
      */
     public Monitor(Log log) {
@@ -59,7 +59,7 @@ public class Monitor {
                     throw new RuntimeException(e);
                 }
 
-                //System.out.printf("Se disparo la transicion %d\n",transicion);
+                System.out.printf("Se disparo la transicion %d\n",transicion);
 
                 // Obtiene las transiciones habilitadas después del disparo.
                 int[] transicionesHabilitadas = petriNet.getTransicionesHabilitadas();
@@ -87,11 +87,10 @@ public class Monitor {
                         // En el caso PRIORITARIO
                         // Lo libera si la relacion 80 20 no se cumple y el unico en la cola es el T12
                         mutex.release();
-                        return;
                     } else {
                         this.colas.release(transicionADisparar); // Libera un hilo de la cola correspondiente.
-                        return;
                     }
+                    return;
                 } else {
                     // Si no hay hilos esperando en transiciones habilitadas, termina el bucle.
                     k = false;

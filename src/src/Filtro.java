@@ -5,15 +5,15 @@ import java.util.concurrent.TimeUnit;
 public class Filtro extends Proceso {
 
     /**
-     * Constructor de la clase src.Filtro.
+     * Constructor de la clase Filtro.
      *
      * @param nombre       Nombre del proceso.
      * @param transiciones Lista de transiciones que este proceso debe manejar.
      * @param tiempo       Intervalo de espera entre cada disparo de transición (en milisegundos).
-     * @param monitor      Objeto src.Monitor utilizado para sincronizar las transiciones.
+     * @param monitor      Objeto Monitor utilizado para sincronizar las transiciones.
      */
     public Filtro(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
-        // Llama al constructor de la clase padre (src.Proceso) para inicializar los atributos comunes.
+        // Llama al constructor de la clase padre (Proceso) para inicializar los atributos comunes.
         super(nombre, transiciones, tiempo, monitor);
     }
 
