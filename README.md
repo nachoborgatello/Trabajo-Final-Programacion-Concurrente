@@ -12,7 +12,7 @@ En la figura se observa una red de Petri que modela un sistema doble de procesam
 - **Imágenes en estado final:** La plaza {P18} contiene las imágenes en estado final.  
 - **Exportación:** Finalmente, la plaza {P19} representa el proceso de exportación de las imágenes fuera del sistema.
 
-![PetriNet](utils\petriNet1.png)
+![PetriNet](utils/petriNet1.png)
 ## Implementación
 
 El proyecto trata sobre un sistema  concurrente modelado mediante una Red de Petri, destinado al procesamiento de imágenes en varias etapas. Este sistema permite importar, cargar, filtrar, redimensionar y exportar imágenes de manera ordenada, asegurando que los hilos concurrentes operen de manera sincronizada, eficiente y libre de conflictos.
