@@ -30,7 +30,7 @@ public class Importador extends Proceso {
         while (getCuenta()[0]<this.cantMaxima && !isStop()) {
             try {
                 // Dispara la transición correspondiente al índice actual en el arreglo de transiciones.
-                this.monitor.dispararTransicion(transiciones[index]);
+                monitor.dispararTransicion(transiciones[index]);
 
                 // Llevamos la cuenta de cuantos disparos se hizo en cada transicion.
                 setCuenta(index);

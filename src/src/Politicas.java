@@ -48,10 +48,10 @@ public class Politicas {
         int transicionSeleccionada = -1;   // Inicializa la transición seleccionada como no válida (-1).
         double minValue = disparos[0];     // Inicializa el valor mínimo con el número de disparos de la primera transición.
 
-        switch (this.tipo){
+        switch (tipo){
             case "BALANCEADA":
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
-                for (int i = 1; i < this.cantTransiciones; i++) {
+                for (int i = 1; i < cantTransiciones; i++) {
                     // Verifica si la transición está habilitada.
                     if (transicionesHabilitadas[i] == 1) {
                         // Si la transición tiene menos disparos que el valor mínimo actual, la selecciona.
@@ -69,7 +69,7 @@ public class Politicas {
                 */
                 int j=0;    // Usado en el bucle siguiente para omitir la eleccion de las transiciones prioritarias.
 
-                if(Objects.equals(this.segmento, "IZQUIERDA")){
+                if(Objects.equals(segmento, "IZQUIERDA")){
                     j=12;
                     if(transicionesHabilitadas[j]==1 && disparos[j-1]!=0){
                         double relacion = disparos[j]/disparos[j-1];
@@ -77,7 +77,7 @@ public class Politicas {
                             return 12;
                         }
                     }
-                } else if (Objects.equals(this.segmento, "DERECHA")){
+                } else if (Objects.equals(segmento, "DERECHA")){
                     j=11;
                     if(transicionesHabilitadas[j]==1 && disparos[j+1]!=0){
                         double relacion = disparos[j]/disparos[j+1];
@@ -87,10 +87,9 @@ public class Politicas {
                     }
                 }
 
-
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
                 // Esta etapa es igual a la Politica BALANCEADA.
-                for (int i = 1; i < this.cantTransiciones; i++) {
+                for (int i = 1; i < cantTransiciones; i++) {
                     // Verifica si la transición está habilitada.
                     if (transicionesHabilitadas[i] == 1 && i!=j) {
                         // Si la transición tiene menos disparos que el valor mínimo actual, la selecciona.

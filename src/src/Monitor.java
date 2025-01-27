@@ -18,12 +18,12 @@ public class Monitor {
      * Inicializa los componentes necesarios para gestionar la red de Petri.
      */
     public Monitor(Log log) {
-        this.mutex = new Semaphore(1);
-        this.petriNet = new PetriNet();
-        this.colas = new Colas(this.petriNet.getCantTransiciones());
-        this.politicas = new Politicas(this.petriNet.getCantTransiciones(),"BALANCEADA","",0);
-        //this.politicas = new src.Politicas(this.petriNet.getCantTransiciones(),"PRIORITARIA","DERECHA",0.8);
-        this.cantDisparos = new double[this.petriNet.getCantTransiciones()];
+        mutex = new Semaphore(1);
+        petriNet = new PetriNet();
+        colas = new Colas(petriNet.getCantTransiciones());
+        politicas = new Politicas(petriNet.getCantTransiciones(),"BALANCEADA","",0);
+        //politicas = new src.Politicas(petriNet.getCantTransiciones(),"PRIORITARIA","DERECHA",0.8);
+        cantDisparos = new double[petriNet.getCantTransiciones()];
         this.log = log;
     }
 
@@ -81,14 +81,14 @@ public class Monitor {
 
                 if (flag) {
                     // Selecciona una transición habilitada con hilos esperando y la despierta.
-                    int transicionADisparar = politicas.seleccionarTransicion(transicionesBloqueadasHabilitadas, this.cantDisparos);
+                    int transicionADisparar = politicas.seleccionarTransicion(transicionesBloqueadasHabilitadas, cantDisparos);
                     if (transicionADisparar == -1) {
                         // Si no hay ninguna transición seleccionada, libera el mutex y finaliza.
                         // En el caso PRIORITARIO
                         // Lo libera si la relacion 80 20 no se cumple y el unico en la cola es el T12
                         mutex.release();
                     } else {
-                        this.colas.release(transicionADisparar); // Libera un hilo de la cola correspondiente.
+                        colas.release(transicionADisparar); // Libera un hilo de la cola correspondiente.
                     }
                     return;
                 } else {
@@ -102,15 +102,15 @@ public class Monitor {
                         2. El tiempo alfa aún no se ha cumplido, por lo que el hilo debe esperar un tiempo igual a alfa - ahora antes de volver a intentar disparar.
                         3. El tiempo beta ha sido superado, lo que impide volver a disparar la transición.
                  */
-                if(!this.petriNet.estaHabilitada(transicion)){
+                if(!petriNet.estaHabilitada(transicion)){
                     // 1. La transición no cuenta con los tokens necesarios. El hilo se bloquea en la cola correspondiente.
                     mutex.release();
-                    this.colas.acquire(transicion); // El hilo entra en la cola de la transición.
+                    colas.acquire(transicion); // El hilo entra en la cola de la transición.
                     k = true;
-                } else if (this.petriNet.getFlagsVentanaTiempo()[transicion]==1) {
+                } else if (petriNet.getFlagsVentanaTiempo()[transicion]==1) {
                     // 2. El tiempo alfa aún no se ha cumplido, por lo que el hilo debe esperar un tiempo igual a alfa - ahora antes de volver a intentar disparar.
                     long ahora = System.currentTimeMillis();
-                    long tiempo = (this.petriNet.getVectorTiempos()[transicion]+this.petriNet.getMatrizTiempos()[transicion][0])-ahora;
+                    long tiempo = (petriNet.getVectorTiempos()[transicion]+petriNet.getMatrizTiempos()[transicion][0])-ahora;
                     mutex.release();
                     try {
                         TimeUnit.MILLISECONDS.sleep(tiempo);
@@ -119,11 +119,11 @@ public class Monitor {
                         throw new RuntimeException(e);
                     }
                     k=true;
-                } else if (this.petriNet.getFlagsVentanaTiempo()[transicion]==2) {
+                } else if (petriNet.getFlagsVentanaTiempo()[transicion]==2) {
                     // 3. El tiempo beta ha sido superado, lo que impide volver a disparar la transición.
                     System.out.printf("Se intento disparar la transicion %d\n",transicion);
                     long ahora = System.currentTimeMillis();
-                    System.out.println(ahora-this.petriNet.getVectorTiempos()[transicion]);
+                    System.out.println(ahora-petriNet.getVectorTiempos()[transicion]);
                     throw new RuntimeException("Fuera de la ventana de tiempos");
                 }
             }
@@ -161,7 +161,7 @@ public class Monitor {
      * @return Array con los contadores de disparos.
      */
     public double[] getDisparos() {
-        return this.cantDisparos;
+        return cantDisparos;
     }
 
     public Semaphore getMutex() {

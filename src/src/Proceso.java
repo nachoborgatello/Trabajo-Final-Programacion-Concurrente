@@ -20,11 +20,11 @@ public abstract class Proceso implements Runnable {
      */
     public Proceso(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
         this.nombre = nombre;
-        this.stop = false;
+        stop = false;
         this.transiciones = transiciones;
-        this.index = 0;
+        index = 0;
         this.tiempo = tiempo;
-        this.cuenta = new int[transiciones.length];
+        cuenta = new int[transiciones.length];
         this.monitor = monitor;
     }
 
@@ -45,6 +45,6 @@ public abstract class Proceso implements Runnable {
     }
 
     public void setCuenta(int transicion) {
-        this.cuenta[transicion]++;
+        cuenta[transicion]++;
     }
 }
