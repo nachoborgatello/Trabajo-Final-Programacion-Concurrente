@@ -15,18 +15,3 @@ En la figura se observa una red de Petri que modela un sistema doble de procesam
 <div align="center">
   <img src="utils/petriNet1.png" alt="PetriNet" width="600">
 </div>
-
-## Implementación
-
-El proyecto trata sobre un sistema  concurrente modelado mediante una Red de Petri, destinado al procesamiento de imágenes en varias etapas. Este sistema permite importar, cargar, filtrar, redimensionar y exportar imágenes de manera ordenada, asegurando que los hilos concurrentes operen de manera sincronizada, eficiente y libre de conflictos.
-
-El programa fue desarrollado en Java e incluye varios componentes clave:
-
-- **Clase Proceso**: Clase abstracta que define la lógica general para las tareas del sistema, como el importador, cargador, filtro, redimensionador y exportador, que heredan de esta.
-- **Monitor**: Coordina los hilos y gestiona las transiciones en la red de Petri utilizando semáforos y sincronización.
-- **Red de Petri (PetriNet)**: Implementa la dinámica del sistema, verificando las condiciones para disparar transiciones y calculando nuevos estados según las reglas de la red.
-- **Políticas de ejecución**: Soporta estrategias como "balanceada" y "prioritaria" para determinar la secuencia de procesamiento en distintas ramas del sistema.
-
-# Referencias
-Artículo cantidad de hilos.
-https://www.researchgate.net/publication/358104149_Algoritmos_para_determinar_cantidad_y_responsabilidad_de_hilos_en_sistemas_embebidos_modelados_con_Redes_de_Petri_S_3_PR
