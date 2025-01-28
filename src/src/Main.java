@@ -8,10 +8,10 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     private static final int MAX_INVARIANTES = 200;                  // Cantidad máxima de invariantes
-    private static final Politica politica = Politica.PRIORITARIA;  // Politica implementada durante la ejecucion de la red
-    private static final Segmento segmento = Segmento.IZQUIERDA;     // Segmento a priorizar de la Etapa 3
-    private static final double prioridad = 0.9;                     // Prioridad dada al segmento
-    private static final Red red = Red.TEMPORAL;                // Tipo de Red de Petri a considerar durante la ejecucion
+    private static final Politica politica = Politica.BALANCEADA;  // Politica implementada durante la ejecucion de la red
+    private static final Segmento segmento = Segmento.NINGUNO;     // Segmento a priorizar de la Etapa 3
+    private static final double prioridad = 0;                     // Prioridad dada al segmento
+    private static final Red red = Red.SIN_TIEMPOS;                // Tipo de Red de Petri a considerar durante la ejecucion
 
     public static void main(String[] args) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
@@ -20,7 +20,7 @@ public class Main {
 
         try {
             // Ruta del archivo de log
-            String LOG_PATH = "log/log.txt";
+            String LOG_PATH = "log/log_" + politica + "_" + segmento + "_" + prioridad + "_" + red + ".txt";
             Log log = new Log(LOG_PATH);
             Monitor monitor = new Monitor(log,politica,segmento,prioridad,red);
             Proceso[] procesos = inicializarProcesos(monitor);
@@ -30,6 +30,7 @@ public class Main {
 
             pararProcesos(monitor,threads);
             printStats(monitor);
+            printtimeStamps(procesos);
 
             log.closeFile();
         } catch (IOException e) {
@@ -37,6 +38,20 @@ public class Main {
         }
 
         logMessage("Se finalizó la ejecución de la red: " + formatter.format(new Date()));
+    }
+
+    /*
+        Metodo que imprime los tiempos que tardo en entrar y salir del monitor cada proceso.
+     */
+    private static void printtimeStamps(Proceso[] procesos) throws IOException {
+        for (Proceso proceso : procesos) {
+            Log log;
+            log = new Log("stats/log_" + proceso.getNombre() + ".txt");
+            for (int i=0;i< proceso.getTimeStamp().size();i++){
+                log.add(proceso.getTimeStamp().get(i));
+            }
+            log.closeFile();
+        }
     }
 
     /**

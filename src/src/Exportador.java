@@ -32,8 +32,15 @@ public class Exportador extends Proceso {
     public void run() {
         while (!monitor.debeDetener()) {
             try {
+
+                long antes = System.currentTimeMillis();
                 monitor.dispararTransicion(transiciones[index]);
-                if (!monitor.debeDetener()) setCuenta(index);
+                long despues = System.currentTimeMillis();
+                if (!monitor.debeDetener()) {
+                    setCuenta(index);
+                    setTimeStamp(antes,despues);
+                }
+
                 index = (index + 1) % transiciones.length;
                 TimeUnit.MILLISECONDS.sleep(tiempo);
             } catch (InterruptedException e) {

@@ -36,8 +36,15 @@ public class Importador extends Proceso {
     public void run() {
         while (getCuenta()[0]<this.cantidadMaxima) {
             try {
+
+                long antes = System.currentTimeMillis();
                 monitor.dispararTransicion(transiciones[index]);
-                setCuenta(index);
+                long despues = System.currentTimeMillis();
+                if (!monitor.debeDetener()) {
+                    setCuenta(index);
+                    setTimeStamp(antes,despues);
+                }
+
                 index = (index + 1) % transiciones.length;
                 TimeUnit.MILLISECONDS.sleep(tiempo);
             } catch (InterruptedException e) {

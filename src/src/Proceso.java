@@ -1,5 +1,7 @@
 package src;
 
+import java.util.ArrayList;
+
 public abstract class Proceso implements Runnable {
 
     private final String nombre;            // Nombre del proceso.
@@ -8,6 +10,8 @@ public abstract class Proceso implements Runnable {
     protected int index;                    // Índice que indica la transición actual que el proceso disparará.
     private final int[] cuenta;             // Cuenta de disparos de cada transicion.
     protected final Monitor monitor;        // Objeto Monitor que sincroniza las transiciones.
+
+    protected final ArrayList<Integer> timeStamp;    // Implementado para medir los tiempos medios de duracion al entrar al monitor
 
     /**
      * Constructor de la clase src.Proceso.
@@ -24,6 +28,8 @@ public abstract class Proceso implements Runnable {
         this.tiempo = tiempo;
         cuenta = new int[transiciones.length];
         this.monitor = monitor;
+
+        timeStamp = new ArrayList<Integer>();
     }
 
     public String getNombre() {
@@ -45,5 +51,13 @@ public abstract class Proceso implements Runnable {
             sb.append(String.format("Transicion: %d Disparos: %d%n", transiciones[i], getCuenta()[i]));
         }
         System.out.print(sb);
+    }
+
+    public void setTimeStamp(Long antes, Long despues){
+        timeStamp.add((int) (despues-antes));
+    }
+
+    public ArrayList<Integer> getTimeStamp(){
+        return timeStamp;
     }
 }

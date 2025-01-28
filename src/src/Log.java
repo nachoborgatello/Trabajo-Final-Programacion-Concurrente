@@ -32,4 +32,12 @@ public class Log {
         }
         writer.write("T" + n);  // Escribe la transición en el archivo (ejemplo: "T1", "T2")
     }
+
+    public void add(Integer n) throws IOException {
+        if (writer == null) {
+            throw new IOException("El archivo no está abierto");
+        }
+        writer.write(n.toString()); // Convierte a texto antes de escribir
+        writer.newLine(); // Añade un salto de línea si cada número debe estar en una nueva línea
+    }
 }
