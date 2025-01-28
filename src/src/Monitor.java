@@ -1,10 +1,13 @@
 package src;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class Monitor {
+
+    private volatile boolean detener = false;
 
     private final Semaphore mutex;          // Semáforo binario para garantizar la exclusión mutua.
     private final PetriNet petriNet;        // Instancia de la red de Petri que se gestionará.
@@ -15,24 +18,29 @@ public class Monitor {
 
     /**
      * Constructor del Monitor.
-     * Inicializa los componentes necesarios para gestionar la red de Petri.
+     * Inicializa las estructuras necesarias para gestionar la concurrencia y la sincronización
+     * en la red de Petri, incluyendo semáforos, políticas, contadores y registros.
+     *
+     * @param log Registro de transiciones y otros eventos en la red.
+     * @param politica Política de selección para disparos en caso de múltiples transiciones habilitadas.
+     * @param segmento Segmento específico para evaluar prioridades entre transiciones.
+     * @param prioridad Valor que establece el nivel de prioridad.
+     * @param tipo Tipo de red de Petri a gestionar.
      */
-    public Monitor(Log log) {
+    public Monitor(Log log, Politica politica, Segmento segmento, double prioridad, Red tipo) {
         mutex = new Semaphore(1);
-        petriNet = new PetriNet();
-        colas = new Colas(petriNet.getCantTransiciones());
-        politicas = new Politicas(petriNet.getCantTransiciones(),"BALANCEADA","",0);
-        //politicas = new src.Politicas(petriNet.getCantTransiciones(),"PRIORITARIA","DERECHA",0.8);
-        cantDisparos = new double[petriNet.getCantTransiciones()];
+        petriNet = new PetriNet(tipo);
+        colas = new Colas(petriNet.getCantidadTransiciones());
+        politicas = new Politicas(petriNet.getCantidadTransiciones(),politica,segmento,prioridad);
+        cantDisparos = new double[petriNet.getCantidadTransiciones()];
         this.log = log;
     }
 
     /**
-     * Metodo para disparar una transición en la red de Petri.
-     * Gestiona la sincronización, verifica las transiciones habilitadas,
-     * y despierta hilos bloqueados según sea necesario.
+     * Dispara una transición en la red de Petri de forma concurrente.
+     * Gestiona las colas, sincronización mediante semáforos y verificaciones de condiciones para el disparo.
      *
-     * @param transicion Índice de la transición que se desea disparar.
+     * @param transicion Índice de la transición a disparar.
      */
     public void dispararTransicion(int transicion) {
 
@@ -46,11 +54,34 @@ public class Monitor {
         boolean k = true;
 
         while (k) {
+            /*
+                Inicio de logica para detener el programa
+             */
+            if (debeDetener()){
+                int index = -1;
+                for (int i=0;i<colas.getColas().size();i++){
+                    if(colas.getColas().get(i).hasQueuedThreads()){
+                        index=i;
+                        break;
+                    }
+                }
+                if (index!=-1){
+                    // Hay hilos esperando en las colas de condicion
+                    colas.liberar(index);
+                } else {
+                    mutex.release();
+                }
+                return;
+            }
+            /*
+                Fin de logica para detener el programa
+            */
+
             k = petriNet.disparar(transicion);
             if (k) {
 
                 // Incrementa el contador de disparos para la transición actual.
-                setDisparo(transicion);
+                contarDisparo(transicion);
 
                 // Registra el disparos de la transición actual.
                 try {
@@ -62,33 +93,25 @@ public class Monitor {
                 System.out.printf("Se disparo la transicion %d\n",transicion);
 
                 // Obtiene las transiciones habilitadas después del disparo.
-                int[] transicionesHabilitadas = petriNet.getTransicionesHabilitadas();
+                int[] sensibilizadas = petriNet.getTransicionesHabilitadas();
 
                 // Obtiene la lista de transiciones bloqueadas (colas con hilos esperando).
                 int[] listaBloqueadas = colas.getListaBloqueadas();
 
-                // Verifica cuáles transiciones habilitadas tienen hilos esperando.
-                int[] transicionesBloqueadasHabilitadas = getTransicionesBloqueadasHabilitadas(transicionesHabilitadas, listaBloqueadas);
+                // ¿Quienes estan?
+                int[] listaDeEspera = quienesEstan(sensibilizadas, listaBloqueadas);
 
-                // Comprueba si hay hilos esperando en transiciones habilitadas.
-                boolean flag = false;
-                for (int transiciones_bloqueadas_habilitadas : transicionesBloqueadasHabilitadas) {
-                    if (transiciones_bloqueadas_habilitadas == 1) {
-                        flag = true; // Hay al menos una transición habilitada con hilos esperando.
-                        break;
-                    }
-                }
-
-                if (flag) {
-                    // Selecciona una transición habilitada con hilos esperando y la despierta.
-                    int transicionADisparar = politicas.seleccionarTransicion(transicionesBloqueadasHabilitadas, cantDisparos);
+                if (!Arrays.stream(listaDeEspera).allMatch(valor -> valor == 0)) {
+                    // Selecciona alguna de las transiciones habilitadas con hilos esperando y la despierta.
+                    int transicionADisparar = politicas.seleccionarTransicion(listaDeEspera, cantDisparos);
                     if (transicionADisparar == -1) {
-                        // Si no hay ninguna transición seleccionada, libera el mutex y finaliza.
-                        // En el caso PRIORITARIO
-                        // Lo libera si la relacion 80 20 no se cumple y el unico en la cola es el T12
+                        /*
+                            Si no hay ninguna transición seleccionada, libera el mutex y finaliza.
+                            En el caso PRIORITARIA, lo libera si la relacion (prioridad,1-prioridad) no se cumple y el unico en la cola es la transicion involucrada en la relacion
+                         */
                         mutex.release();
                     } else {
-                        colas.release(transicionADisparar); // Libera un hilo de la cola correspondiente.
+                        colas.liberar(transicionADisparar); // Libera un hilo de la cola correspondiente.
                     }
                     return;
                 } else {
@@ -105,12 +128,12 @@ public class Monitor {
                 if(!petriNet.estaHabilitada(transicion)){
                     // 1. La transición no cuenta con los tokens necesarios. El hilo se bloquea en la cola correspondiente.
                     mutex.release();
-                    colas.acquire(transicion); // El hilo entra en la cola de la transición.
+                    colas.esperar(transicion); // El hilo entra en la cola de la transición.
                     k = true;
-                } else if (petriNet.getFlagsVentanaTiempo()[transicion]==1) {
+                } else if (petriNet.getVentanaTiempos()[transicion]==1) {
                     // 2. El tiempo alfa aún no se ha cumplido, por lo que el hilo debe esperar un tiempo igual a alfa - ahora antes de volver a intentar disparar.
                     long ahora = System.currentTimeMillis();
-                    long tiempo = (petriNet.getVectorTiempos()[transicion]+petriNet.getMatrizTiempos()[transicion][0])-ahora;
+                    long tiempo = (petriNet.getTimeStamp()[transicion]+petriNet.getTiempos()[transicion][0])-ahora;
                     mutex.release();
                     try {
                         TimeUnit.MILLISECONDS.sleep(tiempo);
@@ -119,11 +142,11 @@ public class Monitor {
                         throw new RuntimeException(e);
                     }
                     k=true;
-                } else if (petriNet.getFlagsVentanaTiempo()[transicion]==2) {
+                } else if (petriNet.getVentanaTiempos()[transicion]==2) {
                     // 3. El tiempo beta ha sido superado, lo que impide volver a disparar la transición.
                     System.out.printf("Se intento disparar la transicion %d\n",transicion);
                     long ahora = System.currentTimeMillis();
-                    System.out.println(ahora-petriNet.getVectorTiempos()[transicion]);
+                    System.out.println(ahora-petriNet.getTimeStamp()[transicion]);
                     throw new RuntimeException("Fuera de la ventana de tiempos");
                 }
             }
@@ -132,16 +155,16 @@ public class Monitor {
     }
 
     /**
-     * Metodo que obtiene las transiciones habilitadas que tienen hilos bloqueados esperando.
+     * Devuelve una lista con las transiciones habilitadas y bloqueadas por hilos esperando.
      *
-     * @param transicionesHabilitadas Lista de transiciones habilitadas en la red.
-     * @param listaBloqueadas Lista de transiciones con hilos bloqueados.
-     * @return Array con las transiciones habilitadas que tienen hilos esperando.
+     * @param sensibilizadas Array de transiciones habilitadas.
+     * @param listaBloqueadas Array de transiciones con hilos bloqueados.
+     * @return Array de transiciones habilitadas con hilos en espera.
      */
-    public int[] getTransicionesBloqueadasHabilitadas(int[] transicionesHabilitadas, int[] listaBloqueadas) {
-        int[] temp = new int[transicionesHabilitadas.length];
-        for (int i = 0; i < transicionesHabilitadas.length; i++) {
-            temp[i] = (transicionesHabilitadas[i] == 1 && listaBloqueadas[i] == 1) ? 1 : 0;
+    public int[] quienesEstan(int[] sensibilizadas, int[] listaBloqueadas) {
+        int[] temp = new int[sensibilizadas.length];
+        for (int i = 0; i < sensibilizadas.length; i++) {
+            temp[i] = (sensibilizadas[i] == 1 && listaBloqueadas[i] == 1) ? 1 : 0;
         }
         return temp;
     }
@@ -149,19 +172,27 @@ public class Monitor {
     /**
      * Incrementa el contador de disparos para una transición específica.
      *
-     * @param transicion Índice de la transición.
+     * @param transicion Índice de la transición cuyo contador se incrementará.
      */
-    private void setDisparo(int transicion) {
+    private void contarDisparo(int transicion) {
         cantDisparos[transicion] += 1;
     }
 
     /**
-     * Devuelve el número de veces que se ha disparado cada transición.
+     * Devuelve el número acumulado de disparos para todas las transiciones.
      *
-     * @return Array con los contadores de disparos.
+     * @return Array con el contador de disparos de cada transición.
      */
     public double[] getDisparos() {
         return cantDisparos;
+    }
+
+    public boolean debeDetener() {
+        return detener;
+    }
+
+    public void detenerHilos() {
+        detener = true;
     }
 
     public Semaphore getMutex() {
@@ -170,13 +201,5 @@ public class Monitor {
 
     public PetriNet getPetriNet() {
         return petriNet;
-    }
-
-    public Colas getColas() {
-        return colas;
-    }
-
-    public Politicas getPoliticas() {
-        return politicas;
     }
 }

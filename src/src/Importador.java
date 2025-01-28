@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Importador extends Proceso {
 
-    private final int cantMaxima;
+    private final int cantidadMaxima;
 
     /**
      * Constructor de la clase Importador.
@@ -18,7 +18,14 @@ public class Importador extends Proceso {
     public Importador(String nombre, int[] transiciones, long tiempo, Monitor monitor, int cantMaxima) {
         // Llama al constructor de la clase padre (Proceso) para inicializar los atributos comunes.
         super(nombre, transiciones, tiempo, monitor);
-        this.cantMaxima = cantMaxima;
+
+        if (transiciones.length == 0) {
+            throw new IllegalArgumentException("La lista de transiciones no puede ser nula o vacía.");
+        }
+        if (tiempo <= 0) {
+            throw new IllegalArgumentException("El tiempo debe ser mayor a 0.");
+        }
+        this.cantidadMaxima = cantMaxima;
     }
 
     /**
@@ -27,25 +34,36 @@ public class Importador extends Proceso {
      */
     @Override
     public void run() {
-        while (getCuenta()[0]<this.cantMaxima && !isStop()) {
+        while (getCuenta()[0]<this.cantidadMaxima) {
             try {
-                // Dispara la transición correspondiente al índice actual en el arreglo de transiciones.
                 monitor.dispararTransicion(transiciones[index]);
-
-                // Llevamos la cuenta de cuantos disparos se hizo en cada transicion.
                 setCuenta(index);
-
-                // Actualiza el índice para avanzar a la siguiente transición de forma cíclica.
                 index = (index + 1) % transiciones.length;
-
                 TimeUnit.MILLISECONDS.sleep(tiempo);
-            } catch (InterruptedException | RuntimeException e) {
-                setStop(true);
+            } catch (InterruptedException e) {
+                System.err.println(getNombre() + ": Proceso interrumpido.");
+                break;
+            } catch (RuntimeException e) {
+                System.err.println(getNombre() + ": Error durante el disparo de transición: " + e.getMessage());
+                break;
             }
         }
-        System.out.println(getNombre());
-        for (int i=0;i< getCuenta().length;i++){
-            System.out.printf("Transicion: %d Disparos: %d\n",transiciones[i],getCuenta()[i]);
+        // Se mantiene esperando hasta que se cumplan la cantidad maxima de invariantes de transicion.
+        while (!monitor.debeDetener()) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("La espera fue interrumpida", e);
+            }
         }
+        /*
+            Importador es el encargado de comenzar a detener el programa.
+            Intenta realizar un ultimo disparo, pero lo que hace es comenzar a despertar a los hilos de las colas de transicion.
+            Al no estar mas habilitados por tokens, se quedan indefinidamente esperando.
+         */
+        monitor.dispararTransicion(0);
+        printStats();
     }
 }
+

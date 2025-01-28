@@ -16,33 +16,32 @@ public class Colas {
      * @param n Número de transiciones (y por lo tanto, número de colas).
      */
     public Colas(int n) {
-        // Cantidad de colas, equivalente al número de transiciones.
-        colas = new ArrayList<>(n);
+        if (n <= 0) {
+            throw new IllegalArgumentException("El número de transiciones debe ser mayor a 0.");
+        }
         listaBloqueadas = new int[n];
-
-        // Inicializa la lista de bloqueadas con todos los valores en 0 (ningún hilo bloqueado inicialmente).
-        Arrays.fill(this.listaBloqueadas, 0);
-
-        // Inicializa los semáforos para cada cola con el valor inicial en 0.
+        colas = new ArrayList<>(n);
+        Arrays.fill(listaBloqueadas, 0);    // Inicializa en 0.
+        colas.ensureCapacity(n);                // Mejora eficiencia al pre-asignar capacidad.
         for (int i = 0; i < n; i++) {
             colas.add(new Semaphore(0));
         }
     }
 
     /**
-     * Metodo que bloquea un hilo en una transición específica.
+     *  Bloquea un hilo en la cola asociada a una transición específica.
+     *  La cola utiliza un semáforo con un contador inicial de 0, obligando al hilo a esperar hasta que se llame a `release`.
      *
      * @param transicion Índice de la transición/cola en la que se debe bloquear el hilo.
      */
-    public void acquire(int transicion) {
-        // Marca la transición como bloqueada en el arreglo de bloqueos.
+    public void esperar(int transicion) {
+        validarIndice(transicion);
         listaBloqueadas[transicion] = 1;
-
         try {
-            // El hilo se bloquea esperando un permiso del semáforo asociado a la transición.
             colas.get(transicion).acquire();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt(); // Restaura el estado interrumpido
+            throw new IllegalStateException("Hilo interrumpido mientras esperaba en la transicion " + transicion, e);
         }
     }
 
@@ -51,18 +50,29 @@ public class Colas {
      *
      * @param transicion Índice de la transición/cola en la que se debe liberar el hilo.
      */
-    public void release(int transicion) {
-        // Libera un permiso en el semáforo asociado a la transición.
+    public void liberar(int transicion) {
+        validarIndice(transicion);
         colas.get(transicion).release();             // Incrementa el contador del semáforo, permitiendo que un hilo continúe.
         listaBloqueadas[transicion] = 0;             // Marca la transición como no bloqueada en el arreglo de bloqueos.
     }
 
     /**
-     * Metodo que devuelve el arreglo de transiciones bloqueadas.
+     * Metodo que devuelve una copia del arreglo de transiciones bloqueadas.
      *
-     * @return Arreglo que indica el estado de bloqueo de cada transición.
+     * @return Copia del arreglo que indica el estado de bloqueo de cada transición.
      */
     public int[] getListaBloqueadas() {
-        return listaBloqueadas;
+        return Arrays.copyOf(listaBloqueadas, listaBloqueadas.length);
+    }
+
+    // Metodo auxiliar para validar índices.
+    private void validarIndice(int transicion) {
+        if (transicion < 0 || transicion >= listaBloqueadas.length) {
+            throw new IllegalArgumentException("Índice de transición inválido: " + transicion);
+        }
+    }
+
+    public ArrayList<Semaphore> getColas() {
+        return colas;
     }
 }

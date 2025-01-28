@@ -32,10 +32,10 @@ with open("log/log.txt", "r") as archivo_log:
     log = archivo_log.read().strip()  # Leemos y eliminamos posibles saltos de línea
 
 # Definir la expresión regular y la cadena de reemplazo
-regex = r'(T0)(.*?)((T1)(.*?)(T3)(.*?)|(T2)(.*?)(T4)(.*?))((T5)(.*?)(T7)(.*?)(T9)(.*?)|(T6)(.*?)(T8)(.*?)(TA)(.*?))((TB)(.*?)(TD)(.*?)|(TC)(.*?)(TE)(.*?))(TF)(.*?)(TG)'
+regex = r'(T0)(.*?)((T1)(.*?)(T3)|(T2)(.*?)(T4))(.*?)((T5)(.*?)(T7)(.*?)(T9)|(T6)(.*?)(T8)(.*?)(TA))(.*?)((TB)(.*?)(TD)|(TC)(.*?)(TE))(.*?)(TF)(.*?)(TG)'
 
 # Usamos una cadena cruda para evitar problemas con las secuencias de escape
-grupos = r'\g<2>\g<5>\g<7>\g<9>\g<11>\g<14>\g<16>\g<18>\g<20>\g<22>\g<24>\g<27>\g<29>\g<31>\g<33>\g<35>'
+grupos = r'\g<2>\g<5>\g<8>\g<10>\g<13>\g<15>\g<18>\g<20>\g<22>\g<25>\g<28>\g<30>\g<32>'
 
 result = ""
 found = 0

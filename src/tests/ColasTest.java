@@ -12,23 +12,23 @@ public class ColasTest {
 
     @Before
     public void setUp() {
-        colas = new Colas(3); // Inicializa con 3 colas.
+        colas = new Colas(5); // Inicializa con 10 colas.
     }
 
     @Test
     public void testConstructor() {
         // Verifica que el arreglo listaBloqueadas esté inicializado con ceros.
         int[] listaBloqueadas = colas.getListaBloqueadas();
-        assertArrayEquals(new int[]{0, 0, 0}, listaBloqueadas);
+        assertArrayEquals(new int[]{0, 0, 0, 0, 0}, listaBloqueadas);
 
-        // Verifica que las colas contengan tres semáforos inicializados.
-        assertEquals(3, listaBloqueadas.length);
+        // Verifica que las colas contengan cinco semáforos inicializados.
+        assertEquals(5, listaBloqueadas.length);
     }
 
     @Test
-    public void testAcquire() {
-        // Lanza un hilo que llama a acquire en la transición 0.
-        Thread hilo = new Thread(() -> colas.acquire(0));
+    public void testEsperar() {
+        // Lanza un hilo que llama a esperar en la transición 0.
+        Thread hilo = new Thread(() -> colas.esperar(0));
 
         hilo.start();
 
@@ -41,7 +41,7 @@ public class ColasTest {
             assertEquals(1, listaBloqueadas[0]); // La transición 0 debe estar bloqueada.
 
             // Libera la transición 0 para que el hilo continúe.
-            colas.release(0);
+            colas.liberar(0);
 
             // Espera que el hilo termine.
             hilo.join();
@@ -51,38 +51,59 @@ public class ColasTest {
     }
 
     @Test
-    public void testRelease() {
-        // Llama a release directamente para liberar una transición.
-        colas.release(1);
+    public void testLiberar() {
+        // Lanza un hilo que llama a esperar en la transición 0.
+        Thread hilo = new Thread(() -> colas.esperar(0));
 
-        // Verifica que la lista de bloqueadas indique que la transición 1 no está bloqueada.
-        int[] listaBloqueadas = colas.getListaBloqueadas();
-        assertEquals(0, listaBloqueadas[1]);
+        hilo.start();
+
+        try {
+            // Espera un momento para asegurarse de que el hilo haya llamado a acquire.
+            Thread.sleep(100);
+
+            // Libera la transición 0 para que el hilo continúe.
+            colas.liberar(0);
+
+            // Verifica que la lista de bloqueadas indique que la transición 1 no está bloqueada.
+            int[] listaBloqueadas = colas.getListaBloqueadas();
+            assertEquals(0, listaBloqueadas[0]);
+
+            // Espera que el hilo termine.
+            hilo.join();
+        } catch (InterruptedException e) {
+            fail("La prueba fue interrumpida inesperadamente.");
+        }
     }
 
     @Test
-    public void testAcquireAndRelease() throws InterruptedException {
-        // Simula la adquisición y liberación de una cola en un hilo separado.
+    public void testEsperaryLiberar() {
+
+        // Lanza un hilo que llama a esperar y liberar en la transición 2.
         Thread hilo = new Thread(() -> {
-            colas.acquire(2);
-            colas.release(2);
+            colas.esperar(2);
+            colas.liberar(2);
         });
 
         hilo.start();
 
-        // Espera un momento para verificar el bloqueo.
-        Thread.sleep(100);
-        int[] listaBloqueadas = colas.getListaBloqueadas();
-        assertEquals(1, listaBloqueadas[2]); // La transición 2 debe estar bloqueada.
+        try {
+            // Espera un momento para asegurarse de que el hilo haya llamado a acquire.
+            Thread.sleep(100);
 
-        // Libera la transición para que el hilo continúe.
-        colas.release(2);
+            int[] listaBloqueadas = colas.getListaBloqueadas();
+            assertEquals(1, listaBloqueadas[2]); // La transición 2 debe estar bloqueada.
 
-        // Espera que el hilo termine.
-        hilo.join();
+            // Libera la transición 2 para que el hilo continúe.
+            colas.liberar(2);
 
-        // Verifica que la transición 2 ya no esté bloqueada.
-        listaBloqueadas = colas.getListaBloqueadas();
-        assertEquals(0, listaBloqueadas[2]);
+            // Verifica que la lista de bloqueadas indique que la transición 1 no está bloqueada.
+            listaBloqueadas = colas.getListaBloqueadas();
+            assertEquals(0, listaBloqueadas[2]);
+
+            // Espera que el hilo termine.
+            hilo.join();
+        } catch (InterruptedException e) {
+            fail("La prueba fue interrumpida inesperadamente.");
+        }
     }
 }
