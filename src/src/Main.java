@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    private static final int MAX_INVARIANTES = 200;                  // Cantidad máxima de invariantes
-    private static final Politica politica = Politica.BALANCEADA;  // Politica implementada durante la ejecucion de la red
-    private static final Segmento segmento = Segmento.NINGUNO;     // Segmento a priorizar de la Etapa 3
-    private static final double prioridad = 0;                     // Prioridad dada al segmento
+    private static final int MAX_INVARIANTES = 200;              // Cantidad máxima de invariantes
+    private static final Politica politica = Politica.BALANCEADA; // Politica implementada durante la ejecucion de la red
+    private static final Segmento segmento = Segmento.NINGUNO;     // Segmento a priorizar de la etapa seleccionada
+    private static final double prioridad = 0;                   // Prioridad dada al segmento
     private static final Red red = Red.SIN_TIEMPOS;                // Tipo de Red de Petri a considerar durante la ejecucion
 
     public static void main(String[] args) {
@@ -20,7 +20,7 @@ public class Main {
 
         try {
             // Ruta del archivo de log
-            String LOG_PATH = "log/log_" + politica + "_" + segmento + "_" + prioridad + "_" + red + ".txt";
+            String LOG_PATH = "log/log_" + "_" + politica + "_" + segmento + "_" + prioridad + "_" + red + ".txt";
             Log log = new Log(LOG_PATH);
             Monitor monitor = new Monitor(log,politica,segmento,prioridad,red);
             Proceso[] procesos = inicializarProcesos(monitor);

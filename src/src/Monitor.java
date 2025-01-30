@@ -1,5 +1,7 @@
 package src;
 
+import src.exception.BetaException;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -27,7 +29,7 @@ public class Monitor {
      * @param prioridad Valor que establece el nivel de prioridad.
      * @param tipo Tipo de red de Petri a gestionar.
      */
-    public Monitor(Log log, Politica politica, Segmento segmento, double prioridad, Red tipo) {
+    public Monitor(Log log ,Politica politica, Segmento segmento, double prioridad, Red tipo) {
         mutex = new Semaphore(1);
         petriNet = new PetriNet(tipo);
         colas = new Colas(petriNet.getCantidadTransiciones());
@@ -147,7 +149,7 @@ public class Monitor {
                     System.out.printf("Se intento disparar la transicion %d\n",transicion);
                     long ahora = System.currentTimeMillis();
                     System.out.println(ahora-petriNet.getTimeStamp()[transicion]);
-                    throw new RuntimeException("Fuera de la ventana de tiempos");
+                    throw new BetaException();
                 }
             }
         }

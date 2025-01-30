@@ -1,5 +1,7 @@
 package src;
 
+import src.exception.PInvariantesException;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -139,7 +141,7 @@ public class PetriNet {
                     actualizarHabilitadas(nuevoMarcado);
                     return true;
                 } else {
-                    throw new RuntimeException("Se corrompieron los invariantes de plaza.");
+                    throw new PInvariantesException();
                 }
             }
         }

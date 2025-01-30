@@ -49,7 +49,7 @@ public class MonitorTest {
     }
 
     @Test
-    public void testMutex() throws IOException {
+    public void testMutex() {
         // Configuración: Crear un Monitor y comprobar el estado del semáforo.
         Semaphore mutex = monitor.getMutex();
         // Ejecución: Intentar adquirir y liberar el semáforo.

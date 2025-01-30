@@ -1,6 +1,8 @@
 package src;
 
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 
 public class Politicas {
 
@@ -8,6 +10,7 @@ public class Politicas {
     private final Politica tipo;            // Politica implementada durante la ejecucion del programa.
     private final Segmento segmento;        // Segmento de la Etapa 3 que se prioriza.
     private final double prioridad;         // Prioridad del segmento de la Etapa 3.
+    private final int transicion;
 
     /**
      * Constructor de la clase src.Politicas.
@@ -22,10 +25,20 @@ public class Politicas {
         this.tipo = Objects.requireNonNullElse(tipo, Politica.BALANCEADA);
         this.segmento = Objects.requireNonNullElse(segmento, Segmento.NINGUNO);
         this.prioridad = Math.max(0, Math.min(1, prioridad)); // Asegura que prioridad esté en [0, 1].
+        int transicion1 = 0;
+        if(Objects.equals(tipo, Politica.PRIORITARIA)){
+            if (Objects.equals(segmento, Segmento.IZQUIERDA)){
+                transicion1 =12;
+            }else {
+                transicion1 =11;
+            }
+        }
+        transicion = transicion1;
     }
 
     /**
      * Selecciona una transición para disparar en función del tipo de política.
+     * ALEATORIA: Devuelve una transicion al azar.
      * BALANCEADA: Prioriza la transición habilitada con menos disparos realizados.
      * PRIORITARIA: Prioriza un segmento en la etapa 3 si cumple la relación definida por la prioridad. Si no es posible, utiliza la política BALANCEADA.
      *
@@ -42,6 +55,26 @@ public class Politicas {
         double minValue = disparos[0];     // Inicializa el valor mínimo con el número de disparos de la primera transición.
 
         switch (tipo){
+            case ALEATORIA:{
+                // Devuelve una transicion al azar
+                ArrayList<Integer> indices = new ArrayList<>();
+                // Recorrer el arreglo y guardar los índices donde hay 1s
+                for (int i = 0; i < transicionesHabilitadas.length; i++) {
+                    if (transicionesHabilitadas[i] == 1) {
+                        indices.add(i);
+                    }
+                }
+
+                // Si no hay ningún 1 en el arreglo, retornamos -1
+                if (indices.isEmpty()) {
+                    return -1;
+                }
+
+                // Elegimos aleatoriamente uno de los índices guardados
+                Random rand = new Random();
+                transicionSeleccionada=indices.get(rand.nextInt(indices.size()));
+                break;
+            }
             case BALANCEADA:
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
                 for (int i = 1; i < cantidadTransiciones; i++) {
@@ -57,25 +90,20 @@ public class Politicas {
                 break;
             case PRIORITARIA:
                 /*
-                    Política de procesamiento que prioriza un segmento en la etapa 3.
-                    Este segmento incluye las transiciones T11, T12, T13 y T14.
+                    Política de procesamiento que prioriza un segmento en la etapa seleccionada.
                 */
-                int j=0;    // Usado en el bucle siguiente para omitir la eleccion de las transiciones prioritarias.
-
                 if(Objects.equals(segmento, Segmento.IZQUIERDA)){
-                    j=12;
-                    if(transicionesHabilitadas[j]==1 && disparos[j-1]!=0){
-                        double relacion = disparos[j]/disparos[j-1];
+                    if(transicionesHabilitadas[transicion]==1 && disparos[transicion-1]!=0){
+                        double relacion = disparos[transicion]/disparos[transicion-1];
                         if (relacion<(1-prioridad)){
-                            return 12;
+                            return transicion;
                         }
                     }
                 } else if (Objects.equals(segmento, Segmento.DERECHA)){
-                    j=11;
-                    if(transicionesHabilitadas[j]==1 && disparos[j+1]!=0){
-                        double relacion = disparos[j]/disparos[j+1];
+                    if(transicionesHabilitadas[transicion]==1 && disparos[transicion+1]!=0){
+                        double relacion = disparos[transicion]/disparos[transicion+1];
                         if (relacion<(1-prioridad)){
-                            return 11;
+                            return transicion;
                         }
                     }
                 }
@@ -83,7 +111,7 @@ public class Politicas {
                 // Esta etapa es igual a la Politica BALANCEADA.
                 for (int i = 1; i < cantidadTransiciones; i++) {
                     // Verifica si la transición está habilitada.
-                    if (transicionesHabilitadas[i] == 1 && i!=j) {
+                    if (transicionesHabilitadas[i] == 1 && i!=transicion) {
                         // Si la transición tiene menos disparos que el valor mínimo actual, la selecciona.
                         if (disparos[i] < minValue) {
                             minValue = disparos[i];      // Actualiza el valor mínimo.

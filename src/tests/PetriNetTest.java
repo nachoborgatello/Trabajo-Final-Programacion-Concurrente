@@ -2,12 +2,11 @@ package tests;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import src.*;
 
 import java.io.IOException;
+
+import static org.junit.Assert.*;
 
 public class PetriNetTest {
 

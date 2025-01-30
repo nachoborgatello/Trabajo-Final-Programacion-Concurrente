@@ -1,5 +1,8 @@
 package src;
 
+import src.exception.BetaException;
+import src.exception.PInvariantesException;
+
 import java.util.concurrent.TimeUnit;
 
 public class Filtro extends Proceso {
@@ -46,8 +49,11 @@ public class Filtro extends Proceso {
             } catch (InterruptedException e) {
                 System.err.println(getNombre() + ": Proceso interrumpido.");
                 break;
-            } catch (RuntimeException e) {
+            } catch (PInvariantesException e){
                 System.err.println(getNombre() + ": Error durante el disparo de transición: " + e.getMessage());
+                break;
+            } catch (BetaException e){
+                monitor.getMutex().release();
                 break;
             }
         }

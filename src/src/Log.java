@@ -1,6 +1,8 @@
 package src;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 // Clase Log para manejar un archivo de registro
 public class Log {

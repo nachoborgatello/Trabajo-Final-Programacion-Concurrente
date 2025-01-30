@@ -5,6 +5,7 @@ import org.junit.Test;
 import src.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -16,7 +17,7 @@ public class ImportadorTest {
     @Before
     public void setUp() {
         try {
-            monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO,0,Red.SIN_TIEMPOS);
+            monitor = new Monitor(new Log("log/log.txt"),Politica.BALANCEADA, Segmento.NINGUNO,0,Red.SIN_TIEMPOS);
             importador = new Importador("Importador-1", new int[]{0}, 1L, monitor,5);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -24,13 +25,13 @@ public class ImportadorTest {
     }
 
     @Test
-    public void testGetNombre() throws IOException {
+    public void testGetNombre() {
         String result = importador.getNombre();
-        assertEquals("El nombre del cargador debería ser 'Importador-1'", "Importador-1", result);
+        assertEquals("El nombre del importador debería ser 'Importador-1'", "Importador-1", result);
     }
 
     @Test
-    public void testSetAndGetCuenta() throws IOException {
+    public void testSetAndGetCuenta() {
         importador.setCuenta(0);
         int[] cuenta = importador.getCuenta();
         assertEquals("El contador de la transición 0 debería ser 1 después de setCuenta(0)", 1, cuenta[0]);
@@ -38,12 +39,12 @@ public class ImportadorTest {
 
     @Test
     public void testRunExecution() throws InterruptedException {
-        // Ejecuta el cargador en un hilo
+        // Ejecuta el importador en un hilo
         Thread thread = new Thread(importador);
         thread.start();
 
         // Deja que el hilo se ejecute brevemente
-        thread.sleep(500);
+        Thread.sleep(500);
 
         // Detenemos el proceso
         monitor.debeDetener();
@@ -51,5 +52,25 @@ public class ImportadorTest {
         // Verificación
         int[] cuenta = importador.getCuenta();
         assertEquals(5,cuenta[0]);
+    }
+
+    @Test
+    public void setTimeStampTest() throws InterruptedException {
+        // Ejecuta el importador en un hilo
+        Thread thread = new Thread(importador);
+
+        ArrayList<Integer> timeStamp = importador.getTimeStamp();
+        assertTrue("La lista debe estar vacia",timeStamp.isEmpty());
+
+        thread.start();
+        // Deja que el hilo se ejecute brevemente
+        Thread.sleep(500);
+
+        // Detenemos el proceso
+        monitor.debeDetener();
+
+        // Verificación
+        timeStamp = importador.getTimeStamp();
+        assertFalse("La lista no debe estar vacia",timeStamp.isEmpty());
     }
 }

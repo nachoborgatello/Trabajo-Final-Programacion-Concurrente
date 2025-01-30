@@ -1,5 +1,7 @@
 import re
 
+path = "log/log__BALANCEADA_NINGUNO_0.0_SIN_TIEMPOS.txt"
+
 def reemplazar_numeros_por_letras(archivo_entrada, archivo_salida):
     # Definir los reemplazos
     reemplazos = {
@@ -25,10 +27,10 @@ def reemplazar_numeros_por_letras(archivo_entrada, archivo_salida):
         archivo.write(contenido)
 
 # Llamada a la función (asegurate de cambiar los nombres de los archivos según corresponda)
-reemplazar_numeros_por_letras("log/log.txt", "log/log.txt")
+reemplazar_numeros_por_letras(path, path)
 
 # Abrir el archivo log.txt y leer la cadena
-with open("log/log.txt", "r") as archivo_log:
+with open(path, "r") as archivo_log:
     log = archivo_log.read().strip()  # Leemos y eliminamos posibles saltos de línea
 
 # Definir la expresión regular y la cadena de reemplazo

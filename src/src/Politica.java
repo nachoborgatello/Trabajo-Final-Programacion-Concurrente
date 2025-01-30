@@ -1,6 +1,6 @@
 package src;
 
 public enum Politica {
-    BALANCEADA, PRIORITARIA
+    BALANCEADA, PRIORITARIA, ALEATORIA
 }
 
