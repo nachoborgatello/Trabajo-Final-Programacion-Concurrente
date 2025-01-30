@@ -1,9 +1,9 @@
-package src;
+package src.petriNet;
 
 import src.exception.PInvariantesException;
+import src.utils.Red;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class PetriNet {
@@ -11,61 +11,48 @@ public class PetriNet {
     private final int[][] matrizIncidencia;     // Matriz de incidencia que define los pesos de los arcos entre plazas y transiciones.
     private final int cantidadPlazas;           // Número de plazas en la red.
     private final int cantidadTransiciones;     // Número de transiciones en la red.
+    private final Plaza[] plazas;               // Arreglo de plazas de la red de Petri.
+    private final Transicion[] transiciones;    // Arreglo de transiciones de la red de Petri.
     private int[] marcado;                      // Estado actual de la red, definido por los tokens en cada plaza.
     private final int[] vector;                 // Vector de disparo que indica qué transición se va a disparar.
-    private final int[] sensibilizadas;         // Indica qué transiciones están habilitadas para disparar por tokens (1 = habilitada, 0 = no habilitada).
     private final long[] timeStamp;             // Vector que guarda el tiempo en que se habilito una transicion temporal.
     private final long[][] tiempos;             // Matriz con los valores de Alfa (columna 0) y Beta (columna 1) para todas las transiciones
     private final int[] ventanaTiempos;         // Vector utilizado para el calculo de la ventana de tiempo:
 
-    // Invariantes de plaza
-    private final List<int[]> PInvariantes = Arrays.asList(
-            new int[]{1, 2, 1}, // P1 + P2 = 1
-            new int[]{4, 5, 1}, // P4 + P5 = 1
-            new int[]{2, 3, 4, 19, 3}, // P2 + P3 + P4 + P19 = 3
-            new int[]{7, 8, 12, 1}, // P7 + P8 + P12 = 1
-            new int[]{10, 11, 13, 1}, // P10 + P11 + P13 = 1
-            new int[]{8, 9, 10, 12, 13, 2}, // P8 + P9 + P10 + P12 + P13 = 2
-            new int[]{15, 16, 17, 1}, // P15 + P16 + P17 = 1
-            new int[]{19, 20, 1}  // P19 + P20 = 1
-    );
-
     /**
-     * Constructor de la clase src.PetriNet.
+     * Constructor de la clase src.petriNet.PetriNet.
      * Define la matriz de incidencia, el marcado inicial, el vector de disparo y las transiciones habilitadas.
      */
     public PetriNet(Red tipo) {
         // Define la matriz de incidencia.
         matrizIncidencia = new int[][]{
-                // T0  T1   T2   T3   T4   T5   T6   T7   T8   T9  T10  T11  T12  T13  T14  T15  T16
-                {1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // P0
-                {0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // P1
-                {0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // P2
-                {0, -1, -1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1}, // P3
-                {0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // P4
-                {0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // P5
-                {0, 0, 0, 1, 1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // P6
-                {0, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0}, // P7
-                {0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // P8
-                {0, 0, 0, 0, 0, -1, -1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0}, // P9
-                {0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0}, // P10
-                {0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0}, // P11
-                {0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0}, // P12
-                {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0}, // P13
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, -1, -1, 0, 0, 0, 0}, // P14
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 1, 1, 0, 0}, // P15
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0}, // P16
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0}, // P17
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, -1, 0}, // P18
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1}, // P19
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1}  // P20
+                {1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, -1, -1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1},
+                {0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 1, 1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, -1, -1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, -1, -1, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 1, 1, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, -1, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1}
         };
 
         cantidadPlazas = matrizIncidencia.length;
         cantidadTransiciones = matrizIncidencia[0].length;
         marcado = new int[]{0, 1, 0, 3, 0, 1, 0, 1, 0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1};
         vector = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        sensibilizadas = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         timeStamp = new long[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         ventanaTiempos = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         Red tipo1 = Objects.requireNonNullElse(tipo, Red.SIN_TIEMPOS);
@@ -102,6 +89,16 @@ public class PetriNet {
             tiempos[16][1] = 200L;
         }
 
+        transiciones = new Transicion[cantidadTransiciones];
+        for(int i=0;i<cantidadTransiciones;i++){
+            transiciones[i] = new Transicion(i,tiempos[i][0],tiempos[i][1]);
+        }
+
+        plazas = new Plaza[cantidadPlazas];
+        for(int i=0;i<cantidadPlazas;i++){
+            plazas[i] = new Plaza(i,marcado[i]);
+        }
+
         // Inicializa las transiciones habilitadas.
         // En caso de estar temporizadas, T0 puede considerarse temporal desde el primer disparo.
         actualizarHabilitadas(marcado);
@@ -136,7 +133,7 @@ public class PetriNet {
                 }
 
                 // Verifica que no se hayan corrompido los invariantes de plaza.
-                if (!verificarInvariantesPlaza(nuevoMarcado)) {
+                if (!verificarInvariantesPlaza()) {
                     // Actualiza el marcado y las transiciones habilitadas según los tokens disponibles.
                     actualizarHabilitadas(nuevoMarcado);
                     return true;
@@ -190,59 +187,86 @@ public class PetriNet {
      * @return `true` si la transición está habilitada, `false` si no lo está.
      */
     public boolean estaHabilitada(int transicion) {
-        return sensibilizadas[transicion] == 1;
+        return transiciones[transicion].estaHabilitada() == 1;
     }
 
     /**
-     * Verifica que los invariantes de plaza definidos en la red se mantengan intactos.
-     * Los invariantes aseguran propiedades fundamentales como la conservación de tokens.
+     * Deshabilita una transición, indicando que no puede ser disparada.
      *
-     * @param marcado Vector de marcado resultante tras el disparo de una transición.
-     * @return `true` si algún invariante no se cumple, `false` si todos los invariantes son válidos.
+     * @param transicion Índice de la transición a deshabilitar.
      */
-    public boolean verificarInvariantesPlaza(int[] marcado) {
-        int suma;
-        for (int[] invariante : PInvariantes) {
-            suma = 0;
-            for (int i = 0; i < invariante.length - 1; i++) {
-                suma += marcado[invariante[i]];
-            }
-            if (suma != invariante[invariante.length - 1]) {
-                return true;
-            }
-        }
-        return false;
+    private void deshabilitar(int transicion) {
+        transiciones[transicion].deshabilitar();
     }
 
     /**
+     * Verifica los invariantes de plaza en el marcado resultante.
+     *
+     * @return `true` si los invariantes no se cumplen, `false` si son válidos.
+     */
+    public boolean verificarInvariantesPlaza() {
+        /*
+            P1 + P2 = 1
+            P4 + P5 = 1
+            P2 + P3 + P4 + P19 = 3
+            P7 + P8 + P12 = 1
+            P10 + P11 + P13 = 1
+            P8 + P9 + P10 + P12 + P13 = 2
+            P15 + P16 + P17 = 1
+            P19 + P20 = 1
+         */
+        if (plazas[1].getTokens() + plazas[2].getTokens() != 1) {
+            return true;
+        } else if (plazas[4].getTokens() + plazas[5].getTokens() != 1) {
+            return true;
+        } else if (plazas[2].getTokens() + plazas[3].getTokens() + plazas[4].getTokens() + plazas[19].getTokens() != 3) {
+            return true;
+        } else if (plazas[7].getTokens() + plazas[8].getTokens() + plazas[12].getTokens() != 1) {
+            return true;
+        } else if (plazas[10].getTokens() + plazas[11].getTokens() + plazas[13].getTokens() != 1) {
+            return true;
+        } else if (plazas[8].getTokens() + plazas[9].getTokens() + plazas[10].getTokens() + plazas[12].getTokens() + plazas[13].getTokens() != 2) {
+            return true;
+        } else if (plazas[15].getTokens() + plazas[16].getTokens() + plazas[17].getTokens() != 1) {
+            return true;
+        } else return plazas[19].getTokens() + plazas[20].getTokens() != 1;
+    }
+
+    /**
+     * Actualiza los tokens disponibles en las plazas.
      * Actualiza el conjunto de transiciones habilitadas basándose en el marcado actual de la red.
      * También actualiza los tiempos de habilitación para transiciones temporizadas.
      *
      * @param marcado Marcado actual de la red.
      */
-    public void actualizarHabilitadas(int[] marcado) {
+    private void actualizarHabilitadas(int[] marcado) {
         this.marcado = marcado; // Actualiza el marcado.
 
-        int[] estabanSensibilizadas = new int[cantidadTransiciones];
+        for (int i = 0; i < cantidadPlazas; i++) {
+            // Actualizamos la cantidad de tokens en las distintas plazas.
+            plazas[i].setTokens(marcado[i]);
+        }
+
+            int[] estabanSensibilizadas = new int[cantidadTransiciones];
 
         for (int i = 0; i < cantidadTransiciones; i++) {
 
-            estabanSensibilizadas[i] = sensibilizadas[i]; // Registra el valor anterior de las transiciones habilitadas.
+            estabanSensibilizadas[i] = transiciones[i].estaHabilitada(); // Registra el valor anterior de las transiciones habilitadas.
 
             // Recalcula las transiciones habilitadas por tokens.
-            sensibilizadas[i] = 1; // Habilita inicialmente.
+            transiciones[i].habilitar(); // Habilita inicialmente.
             for (int j = 0; j < cantidadPlazas; j++) {
                 if (matrizIncidencia[j][i] == -1 && marcado[j] == 0) {
-                    sensibilizadas[i] = 0; // Deshabilita si no hay tokens suficientes.
+                    transiciones[i].deshabilitar(); // Deshabilita si no hay tokens suficientes.
                     break;
                 }
             }
 
             if (tiempos[i][0]!=-1) {
-                if (estabanSensibilizadas[i] == 0 && sensibilizadas[i] == 1) {
+                if (estabanSensibilizadas[i] == 0 && transiciones[i].estaHabilitada() == 1) {
                     // Transición habilitada por primera vez
                     timeStamp[i] = System.currentTimeMillis();
-                } else if (estabanSensibilizadas[i] == 1 && sensibilizadas[i] == 0) {
+                } else if (estabanSensibilizadas[i] == 1 && transiciones[i].estaHabilitada() == 0) {
                     // Transición deshabilitada
                     timeStamp[i] = 0L;
                 } else if (i == 0) {
@@ -260,14 +284,16 @@ public class PetriNet {
      * @param tiempo Tiempo actual en milisegundos.
      * @return `true` si el disparo es válido según la ventana de tiempo, `false` en caso contrario.
      */
-    public boolean validarTiempos(int transicion,long tiempo){
-        if(tiempo>(timeStamp[transicion]+tiempos[transicion][0])){
-            if((tiempo<(timeStamp[transicion]+tiempos[transicion][1]))){
+    private boolean validarTiempos(int transicion,long tiempo){
+        if(tiempo>(timeStamp[transicion]+transiciones[transicion].getAlfa())){
+            if((tiempo<(timeStamp[transicion]+transiciones[transicion].getBeta()))){
                 // 0:Indica que la transicion esta dentro de la ventana
                 ventanaTiempos[transicion]=0;
                 return true;
             }
             // 2:Indica que se disparo luego de beta.
+            // Deshabilita la transicion y avisa al hilo que se intento disparar fuera de la ventana de tiempos
+            deshabilitar(transicion);
             ventanaTiempos[transicion]=2;
             return false;
         }
@@ -276,7 +302,17 @@ public class PetriNet {
         return false;
     }
 
-    public int[] getTransicionesHabilitadas() {
+    // Métodos getter para acceder a las variables privadas de la clase.
+
+    public int[] getSensibilizadas() {
+        int[] sensibilizadas = new int[cantidadTransiciones];
+        for (int i=0;i<cantidadTransiciones;i++){
+            if (transiciones[i].estaHabilitada()==1){
+                sensibilizadas[i]=1;
+            }else {
+                sensibilizadas[i]=0;
+            }
+        }
         return sensibilizadas;
     }
 
@@ -298,5 +334,9 @@ public class PetriNet {
 
     public int[] getMarcado() {
         return marcado;
+    }
+
+    public Transicion[] getTransiciones() {
+        return transiciones;
     }
 }

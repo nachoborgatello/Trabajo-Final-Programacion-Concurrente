@@ -2,9 +2,9 @@ package tests;
 
 import org.junit.Before;
 import org.junit.Test;
-import src.Politica;
+import src.utils.Politica;
 import src.Politicas;
-import src.Segmento;
+import src.utils.Segmento;
 
 import static org.junit.Assert.assertEquals;
 

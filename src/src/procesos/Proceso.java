@@ -1,4 +1,6 @@
-package src;
+package src.procesos;
+
+import src.Monitor;
 
 import java.util.ArrayList;
 
@@ -14,7 +16,7 @@ public abstract class Proceso implements Runnable {
     protected final ArrayList<Integer> timeStamp;    // Implementado para medir los tiempos medios de duracion al entrar al monitor
 
     /**
-     * Constructor de la clase src.Proceso.
+     * Constructor de la clase src.procesos.Proceso.
      *
      * @param nombre       Nombre del proceso.
      * @param transiciones Arreglo de transiciones que el proceso debe manejar.
@@ -28,7 +30,6 @@ public abstract class Proceso implements Runnable {
         this.tiempo = tiempo;
         cuenta = new int[transiciones.length];
         this.monitor = monitor;
-
         timeStamp = new ArrayList<Integer>();
     }
 

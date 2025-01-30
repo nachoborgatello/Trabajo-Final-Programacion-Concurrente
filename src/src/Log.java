@@ -28,11 +28,11 @@ public class Log {
     }
 
     // Metodo para agregar una transición (un identificador como "Tn") al archivo
-    public void addTransicion(int n) throws IOException {
+    public void addTransicion(String nombre) throws IOException {
         if (writer == null) {
             throw new IOException("El archivo no está abierto");
         }
-        writer.write("T" + n);  // Escribe la transición en el archivo (ejemplo: "T1", "T2")
+        writer.write(nombre);  // Escribe la transición en el archivo (ejemplo: "T1", "T2")
     }
 
     public void add(Integer n) throws IOException {

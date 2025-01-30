@@ -3,6 +3,10 @@ package tests;
 import org.junit.Before;
 import org.junit.Test;
 import src.*;
+import src.procesos.Importador;
+import src.utils.Politica;
+import src.utils.Red;
+import src.utils.Segmento;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +21,7 @@ public class ImportadorTest {
     @Before
     public void setUp() {
         try {
-            monitor = new Monitor(new Log("log/log.txt"),Politica.BALANCEADA, Segmento.NINGUNO,0,Red.SIN_TIEMPOS);
+            monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO,0, Red.SIN_TIEMPOS);
             importador = new Importador("Importador-1", new int[]{0}, 1L, monitor,5);
         } catch (IOException e) {
             throw new RuntimeException(e);

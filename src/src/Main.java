@@ -1,5 +1,10 @@
 package src;
 
+import src.procesos.*;
+import src.utils.Politica;
+import src.utils.Red;
+import src.utils.Segmento;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +16,7 @@ public class Main {
     private static final Politica politica = Politica.BALANCEADA; // Politica implementada durante la ejecucion de la red
     private static final Segmento segmento = Segmento.NINGUNO;     // Segmento a priorizar de la etapa seleccionada
     private static final double prioridad = 0;                   // Prioridad dada al segmento
-    private static final Red red = Red.SIN_TIEMPOS;                // Tipo de Red de Petri a considerar durante la ejecucion
+    private static final Red red = Red.TEMPORAL;                // Tipo de Red de Petri a considerar durante la ejecucion
 
     public static void main(String[] args) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");

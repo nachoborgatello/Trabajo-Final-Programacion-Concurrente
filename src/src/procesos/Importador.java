@@ -1,21 +1,24 @@
-package src;
+package src.procesos;
 
-import src.exception.BetaException;
+import src.Monitor;
 import src.exception.PInvariantesException;
 
 import java.util.concurrent.TimeUnit;
 
-public class Redimensionador extends Proceso {
+public class Importador extends Proceso {
+
+    private final int cantidadMaxima;
 
     /**
-     * Constructor de la clase Redimensionador.
+     * Constructor de la clase Importador.
      *
      * @param nombre       Nombre del proceso.
      * @param transiciones Lista de transiciones que este proceso debe manejar.
      * @param tiempo       Intervalo de espera entre cada disparo de transición (en milisegundos).
      * @param monitor      Objeto Monitor utilizado para sincronizar las transiciones.
+     * @param cantMaxima   Cantidad maxima de imagenes a importar dentro del sistema.
      */
-    public Redimensionador(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
+    public Importador(String nombre, int[] transiciones, long tiempo, Monitor monitor, int cantMaxima) {
         // Llama al constructor de la clase padre (Proceso) para inicializar los atributos comunes.
         super(nombre, transiciones, tiempo, monitor);
 
@@ -25,6 +28,7 @@ public class Redimensionador extends Proceso {
         if (tiempo <= 0) {
             throw new IllegalArgumentException("El tiempo debe ser mayor a 0.");
         }
+        this.cantidadMaxima = cantMaxima;
     }
 
     /**
@@ -33,7 +37,7 @@ public class Redimensionador extends Proceso {
      */
     @Override
     public void run() {
-        while (!monitor.debeDetener()) {
+        while (getCuenta()[0]<this.cantidadMaxima) {
             try {
 
                 long antes = System.currentTimeMillis();
@@ -52,11 +56,24 @@ public class Redimensionador extends Proceso {
             } catch (PInvariantesException e){
                 System.err.println(getNombre() + ": Error durante el disparo de transición: " + e.getMessage());
                 break;
-            } catch (BetaException e){
-                monitor.getMutex().release();
-                break;
             }
         }
+        // Se mantiene esperando hasta que se cumplan la cantidad maxima de invariantes de transicion.
+        while (!monitor.debeDetener()) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("La espera fue interrumpida", e);
+            }
+        }
+        /*
+            Importador es el encargado de comenzar a detener el programa.
+            Intenta realizar un ultimo disparo, pero lo que hace es comenzar a despertar a los hilos de las colas de transicion.
+            Al no estar mas habilitados por tokens, se quedan indefinidamente esperando.
+         */
+        monitor.dispararTransicion(0);
         printStats();
     }
 }
+

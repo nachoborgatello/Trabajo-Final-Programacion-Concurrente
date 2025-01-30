@@ -3,6 +3,11 @@ package tests;
 import org.junit.Before;
 import org.junit.Test;
 import src.*;
+import src.petriNet.PetriNet;
+import src.procesos.Importador;
+import src.utils.Politica;
+import src.utils.Red;
+import src.utils.Segmento;
 
 import java.io.IOException;
 
@@ -89,7 +94,7 @@ public class PetriNetTest {
         // Verificamos si la transición se disparó correctamente
         assertTrue(resultado);
 
-        int[] t_habilitadas = petriNetSinTiempo.getTransicionesHabilitadas();
+        int[] t_habilitadas = petriNetSinTiempo.getSensibilizadas();
         int[] esperado = new int[]{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
         assertArrayEquals(esperado,t_habilitadas);

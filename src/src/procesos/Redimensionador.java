@@ -1,21 +1,21 @@
-package src;
+package src.procesos;
 
-import src.exception.BetaException;
+import src.Monitor;
 import src.exception.PInvariantesException;
 
 import java.util.concurrent.TimeUnit;
 
-public class Exportador extends Proceso {
+public class Redimensionador extends Proceso {
 
     /**
-     * Constructor de la clase Exportador.
+     * Constructor de la clase Redimensionador.
      *
      * @param nombre       Nombre del proceso.
      * @param transiciones Lista de transiciones que este proceso debe manejar.
      * @param tiempo       Intervalo de espera entre cada disparo de transición (en milisegundos).
      * @param monitor      Objeto Monitor utilizado para sincronizar las transiciones.
      */
-    public Exportador(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
+    public Redimensionador(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
         // Llama al constructor de la clase padre (Proceso) para inicializar los atributos comunes.
         super(nombre, transiciones, tiempo, monitor);
 
@@ -51,9 +51,6 @@ public class Exportador extends Proceso {
                 break;
             } catch (PInvariantesException e){
                 System.err.println(getNombre() + ": Error durante el disparo de transición: " + e.getMessage());
-                break;
-            } catch (BetaException e){
-                monitor.getMutex().release();
                 break;
             }
         }

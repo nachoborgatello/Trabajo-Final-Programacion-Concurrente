@@ -1,5 +1,8 @@
 package src;
 
+import src.utils.Politica;
+import src.utils.Segmento;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
@@ -49,9 +52,7 @@ public class Politicas {
      */
     public int seleccionarTransicion(int[] transicionesHabilitadas, double[] disparos) {
 
-        validarArreglos(transicionesHabilitadas, disparos);
-
-        int transicionSeleccionada = -1;   // Inicializa la transición seleccionada como no válida (-1).
+        int transicionSeleccionada = -1;    // Inicializa la transición seleccionada como no válida (-1).
         double minValue = disparos[0];     // Inicializa el valor mínimo con el número de disparos de la primera transición.
 
         switch (tipo){
@@ -77,15 +78,13 @@ public class Politicas {
             }
             case BALANCEADA:
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
-                for (int i = 1; i < cantidadTransiciones; i++) {
-                    // Verifica si la transición está habilitada.
-                    if (transicionesHabilitadas[i] == 1) {
-                        // Si la transición tiene menos disparos que el valor mínimo actual, la selecciona.
-                        if (disparos[i] < minValue) {
-                            minValue = disparos[i];      // Actualiza el valor mínimo.
-                            transicionSeleccionada = i;  // Actualiza la transición seleccionada.
-                        }
+                int i = 1;
+                while (i < cantidadTransiciones) {
+                    if (transicionesHabilitadas[i] == 1 && disparos[i] < minValue) {
+                        minValue = disparos[i];      // Actualiza el valor mínimo con el número de disparos de la transición actual.
+                        transicionSeleccionada = i;  // Guarda el índice de la transición con menos disparos.
                     }
+                    i++;  // Avanza al siguiente índice en la lista de transiciones.
                 }
                 break;
             case PRIORITARIA:
@@ -109,26 +108,21 @@ public class Politicas {
                 }
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
                 // Esta etapa es igual a la Politica BALANCEADA.
-                for (int i = 1; i < cantidadTransiciones; i++) {
-                    // Verifica si la transición está habilitada.
-                    if (transicionesHabilitadas[i] == 1 && i!=transicion) {
-                        // Si la transición tiene menos disparos que el valor mínimo actual, la selecciona.
-                        if (disparos[i] < minValue) {
-                            minValue = disparos[i];      // Actualiza el valor mínimo.
-                            transicionSeleccionada = i;  // Actualiza la transición seleccionada.
+                int j = 1;
+                while (j < cantidadTransiciones) {  // Recorre todas las transiciones hasta cantidadTransiciones - 1.
+                    // Verifica si la transición está habilitada y no es la misma que la transición priorizada.
+                    if (transicionesHabilitadas[j] == 1 && j != transicion) {
+                        if (disparos[j] < minValue) {
+                            minValue = disparos[j];      // Actualiza el valor mínimo con el número de disparos de la transición actual.
+                            transicionSeleccionada = j;  // Guarda el índice de la transición con menos disparos.
                         }
                     }
+                    j++;  // Avanza al siguiente índice en la lista de transiciones.
                 }
                 break;
             default:
                 System.out.println("Política inválida.");
         }
         return transicionSeleccionada;
-    }
-
-    private void validarArreglos(int[] transicionesHabilitadas, double[] disparos) {
-        if (transicionesHabilitadas.length != cantidadTransiciones || disparos.length != cantidadTransiciones) {
-            throw new IllegalArgumentException("Los arreglos deben tener el tamaño igual a la cantidad de transiciones.");
-        }
     }
 }
