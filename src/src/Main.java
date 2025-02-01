@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     private static final int MAX_INVARIANTES = 200;              // Cantidad máxima de invariantes
-    private static final Politica politica = Politica.PRIORITARIA; // Politica implementada durante la ejecucion de la red
-    private static final Segmento segmento = Segmento.IZQUIERDA;     // Segmento a priorizar de la etapa seleccionada
-    private static final double prioridad = 0.8;                   // Prioridad dada al segmento
-    private static final Red red = Red.TEMPORAL;                // Tipo de Red de Petri a considerar durante la ejecucion
+    private static final Politica politica = Politica.BALANCEADA; // Politica implementada durante la ejecucion de la red
+    private static final Segmento segmento = Segmento.NINGUNO;     // Segmento a priorizar de la etapa seleccionada
+    private static final double prioridad = 0;                   // Prioridad dada al segmento
+    private static final Red red = Red.SIN_TIEMPOS;                // Tipo de Red de Petri a considerar durante la ejecucion
 
     public static void main(String[] args) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
@@ -27,13 +27,13 @@ public class Main {
             // Ruta del archivo de log
             String LOG_PATH = "log/log_" + "_" + politica + "_" + segmento + "_" + prioridad + "_" + red + ".txt";
             Log log = new Log(LOG_PATH);
-            Monitor monitor = new Monitor(log,politica,segmento,prioridad,red);
+            Monitor monitor = new Monitor(log,politica,segmento,prioridad,red,MAX_INVARIANTES);
             Proceso[] procesos = inicializarProcesos(monitor);
 
             Thread[] threads = startProcesos(procesos);
             esperarProcesos(monitor);
 
-            pararProcesos(monitor,threads);
+            pararProcesos(threads);
             printStats(monitor);
             printtimeStamps(procesos);
 
@@ -80,7 +80,7 @@ public class Main {
                 new Mejorador(nombres[4], transiciones[4], tiempos[4], monitor),
                 new Cortador(nombres[5], transiciones[5], tiempos[5], monitor),
                 new Cortador(nombres[6], transiciones[6], tiempos[6], monitor),
-                new Exportador(nombres[7], transiciones[7], tiempos[7], monitor)
+                new Exportador(nombres[7], transiciones[7], tiempos[7], monitor, MAX_INVARIANTES)
         };
     }
 
@@ -120,9 +120,8 @@ public class Main {
      *
      * @param threads Array con los hilos en ejecución.
      */
-    private static void pararProcesos(Monitor monitor, Thread[] threads) {
+    private static void pararProcesos(Thread[] threads) {
         // Notifica a los procesos que deben detenerse
-        monitor.detenerHilos();
         for (Thread thread : threads) {
             try {
                 thread.join();

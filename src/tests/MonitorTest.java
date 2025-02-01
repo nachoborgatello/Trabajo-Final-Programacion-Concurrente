@@ -20,7 +20,7 @@ public class MonitorTest {
     @Before
     public void setUp() {
         try {
-            monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO,0, Red.SIN_TIEMPOS);
+            monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO,0, Red.SIN_TIEMPOS,200);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

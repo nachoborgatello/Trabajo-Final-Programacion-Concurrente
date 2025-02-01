@@ -19,6 +19,7 @@ public class Monitor {
     private final Colas colas;              // Estructura para gestionar las colas de espera de los hilos.
     private final Politicas politicas;      // Define las políticas para seleccionar qué transición disparar.
     private final double[] cantDisparos;    // Contador para registrar cuántas veces se dispara cada transición.
+    private final int MAX_INVARIANTES;
     private final Log log;
 
     /**
@@ -32,13 +33,14 @@ public class Monitor {
      * @param prioridad Valor que establece el nivel de prioridad.
      * @param tipo Tipo de red de Petri a gestionar.
      */
-    public Monitor(Log log , Politica politica, Segmento segmento, double prioridad, Red tipo) {
+    public Monitor(Log log , Politica politica, Segmento segmento, double prioridad, Red tipo, int MAX_INVARIANTES) {
         mutex = new Semaphore(1);
         petriNet = new PetriNet(tipo);
         colas = new Colas(petriNet.getCantidadTransiciones());
         politicas = new Politicas(petriNet.getCantidadTransiciones(),politica,segmento,prioridad);
         cantDisparos = new double[petriNet.getCantidadTransiciones()];
         this.log = log;
+        this.MAX_INVARIANTES = MAX_INVARIANTES;
     }
 
     /**
@@ -94,6 +96,11 @@ public class Monitor {
 
                 // Incrementa el contador de disparos para la transición actual.
                 contarDisparo(transicion);
+
+                // Cuando se dispara por ultima vez el exportador, levanta el flag que comienza a detener el programa
+                if(cantDisparos[16]==MAX_INVARIANTES){
+                    detenerHilos();
+                }
 
                 System.out.println(Thread.currentThread().getName() + " disparo la transicion " + transicion);
 

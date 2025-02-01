@@ -1,6 +1,6 @@
 import re
 
-path = "log/log__BALANCEADA_NINGUNO_0.0_SIN_TIEMPOS.txt"
+path = "log/log__PRIORITARIA_IZQUIERDA_0.8_TEMPORAL.txt"
 
 def reemplazar_numeros_por_letras(archivo_entrada, archivo_salida):
     # Definir los reemplazos
@@ -31,32 +31,30 @@ reemplazar_numeros_por_letras(path, path)
 
 # Abrir el archivo log.txt y leer la cadena
 with open(path, "r") as archivo_log:
-    log = archivo_log.read().strip()  # Leemos y eliminamos posibles saltos de línea
+    log = archivo_log.read() # Leemos y eliminamos posibles saltos de línea
 
-# Definir la expresión regular y la cadena de reemplazo
 regex = r'(T0)(.*?)((T1)(.*?)(T3)|(T2)(.*?)(T4))(.*?)((T5)(.*?)(T7)(.*?)(T9)|(T6)(.*?)(T8)(.*?)(TA))(.*?)((TB)(.*?)(TD)|(TC)(.*?)(TE))(.*?)(TF)(.*?)(TG)'
 
-# Usamos una cadena cruda para evitar problemas con las secuencias de escape
 grupos = r'\g<2>\g<5>\g<8>\g<10>\g<13>\g<15>\g<18>\g<20>\g<22>\g<25>\g<28>\g<30>\g<32>'
 
-result = ""
-found = 0
+resultado = ""
+encontrados = 0
 total = 0
 
 # Bucle para aplicar la expresión regular y hacer los reemplazos
 while True:
-    result, found = re.subn(regex, grupos, log, count=0)
-    if found == 0:
+    resultado, encontrados = re.subn(regex, grupos, log)
+    if encontrados == 0:
         break
-    total += found
-    log = result
+    total += encontrados
+    log = resultado
 
-# Mostrar resultados
-print("Resultado:", result)
+# Mostrar resultadoados
+print("Resultado:", resultado)
 print("Número de reemplazos realizados:", total)
 
 # Mostrar resultados
-if not result:  # Si el resultado está vacío
+if not resultado:
     print("Éxito")
 else:
     print("Falló")

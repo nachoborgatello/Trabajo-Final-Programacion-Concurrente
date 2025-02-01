@@ -1,19 +1,19 @@
-import re  # Importamos el módulo 're' para trabajar con expresiones regulares
+import re
 
-def parse_marked_lines(file_path):
-    # Función para parsear las líneas de un archivo de texto con formato específico
-    
-    # Abrimos el archivo en modo lectura
+def parsear(file_path):
+
+    # Abrimos el archivo
     with open(file_path, 'r') as file:
         # Leemos todas las líneas del archivo
         lines = file.readlines()
     
-    resultados = []  # Lista para almacenar los resultados finales
+    resultados = []
     
     # Iteramos sobre cada línea del archivo
     for line in lines:
-        # Utilizamos una expresión regular para extraer la parte de la línea que contiene las etiquetas "S.p0", etc.
+        # Utilizamos una expresión regular para extraer la parte de la línea que contiene las etiquetas "S.p0"
         match = re.search(r'"(S\.[^"]*)"', line)
+       
         if match:
             # Si encontramos una coincidencia, extraemos el texto de las etiquetas S.p0, S.p1, etc.
             marcado_texto = match.group(1)
@@ -44,17 +44,17 @@ def parse_marked_lines(file_path):
     # Retornamos la lista de resultados (marcado y suma)
     return resultados
 
-# Ruta del archivo de entrada
+# Ruta del archivo
 file_path = 'graph\kts\m1.kts'
 
 # Pasamos el archivo al parser para que lo procese
-parsed_results = parse_marked_lines(file_path)
+parser_resultados = parsear(file_path)
 
 # Encontramos la línea con el mayor valor de suma usando la función max y una expresión lambda
-max_sum = max(parsed_results, key=lambda x: x[1])  # La clave de la comparación es la suma (x[1])
+max_sum = max(parser_resultados, key=lambda x: x[1])  # La clave de la comparación es la suma (x[1])
 
 # Mostrar los resultados de todas las líneas con su marcado y suma
-for i, (marcado, suma) in enumerate(parsed_results):
+for i, (marcado, suma) in enumerate(parser_resultados):
     print(f"Línea {i + 1}: {marcado} | Suma: {suma}")
 
 # Imprimimos la línea con la mayor suma

@@ -21,7 +21,7 @@ public class ImportadorTest {
     @Before
     public void setUp() {
         try {
-            monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO,0, Red.SIN_TIEMPOS);
+            monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO,0, Red.SIN_TIEMPOS,200);
             importador = new Importador("Importador-1", new int[]{0}, 1L, monitor,5);
         } catch (IOException e) {
             throw new RuntimeException(e);

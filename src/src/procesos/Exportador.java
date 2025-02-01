@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Exportador extends Proceso {
 
+    private final int cantidadMaxima;
+
     /**
      * Constructor de la clase Exportador.
      *
@@ -15,7 +17,7 @@ public class Exportador extends Proceso {
      * @param tiempo       Intervalo de espera entre cada disparo de transición (en milisegundos).
      * @param monitor      Objeto Monitor utilizado para sincronizar las transiciones.
      */
-    public Exportador(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
+    public Exportador(String nombre, int[] transiciones, long tiempo, Monitor monitor, int cantMaxima) {
         // Llama al constructor de la clase padre (Proceso) para inicializar los atributos comunes.
         super(nombre, transiciones, tiempo, monitor);
 
@@ -25,6 +27,7 @@ public class Exportador extends Proceso {
         if (tiempo <= 0) {
             throw new IllegalArgumentException("El tiempo debe ser mayor a 0.");
         }
+        this.cantidadMaxima = cantMaxima;
     }
 
     /**
@@ -33,16 +36,15 @@ public class Exportador extends Proceso {
      */
     @Override
     public void run() {
-        while (!monitor.debeDetener()) {
+        while (getCuenta()[1]<this.cantidadMaxima) {
             try {
 
                 long antes = System.currentTimeMillis();
                 monitor.dispararTransicion(transiciones[index]);
                 long despues = System.currentTimeMillis();
-                if (!monitor.debeDetener()) {
-                    setCuenta(index);
-                    setTimeStamp(antes,despues);
-                }
+
+                setCuenta(index);
+                setTimeStamp(antes,despues);
 
                 index = (index + 1) % transiciones.length;
                 TimeUnit.MILLISECONDS.sleep(tiempo);
