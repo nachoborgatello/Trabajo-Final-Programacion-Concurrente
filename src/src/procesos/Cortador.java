@@ -5,17 +5,17 @@ import src.exception.PInvariantesException;
 
 import java.util.concurrent.TimeUnit;
 
-public class Filtro extends Proceso {
+public class Cortador extends Proceso {
 
     /**
-     * Constructor de la clase Filtro.
+     * Constructor de la clase Redimensionador.
      *
      * @param nombre       Nombre del proceso.
      * @param transiciones Lista de transiciones que este proceso debe manejar.
      * @param tiempo       Intervalo de espera entre cada disparo de transición (en milisegundos).
      * @param monitor      Objeto Monitor utilizado para sincronizar las transiciones.
      */
-    public Filtro(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
+    public Cortador(String nombre, int[] transiciones, long tiempo, Monitor monitor) {
         // Llama al constructor de la clase padre (Proceso) para inicializar los atributos comunes.
         super(nombre, transiciones, tiempo, monitor);
 

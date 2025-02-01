@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     private static final int MAX_INVARIANTES = 200;              // Cantidad máxima de invariantes
-    private static final Politica politica = Politica.BALANCEADA; // Politica implementada durante la ejecucion de la red
-    private static final Segmento segmento = Segmento.NINGUNO;     // Segmento a priorizar de la etapa seleccionada
-    private static final double prioridad = 0;                   // Prioridad dada al segmento
+    private static final Politica politica = Politica.PRIORITARIA; // Politica implementada durante la ejecucion de la red
+    private static final Segmento segmento = Segmento.IZQUIERDA;     // Segmento a priorizar de la etapa seleccionada
+    private static final double prioridad = 0.8;                   // Prioridad dada al segmento
     private static final Red red = Red.TEMPORAL;                // Tipo de Red de Petri a considerar durante la ejecucion
 
     public static void main(String[] args) {
@@ -66,7 +66,7 @@ public class Main {
      * @return Array con las instancias de los procesos inicializados.
      */
     private static Proceso[] inicializarProcesos(Monitor monitor) {
-        String[] nombres = {"Importador-1", "Cargador-1", "Cargador-2", "Filtro-1", "Filtro-2", "Redimensionador-1", "Redimensionador-2", "Exportador-1"};
+        String[] nombres = {"Importador-1", "Cargador-1", "Cargador-2", "Mejorador-1", "Mejorador-2", "Cortador-1", "Cortador-2", "Exportador-1"};
 
         int[][] transiciones = { {0}, {1, 3}, {2, 4}, {5, 7, 9}, {6, 8, 10}, {11, 13}, {12, 14}, {15, 16} };
 
@@ -76,10 +76,10 @@ public class Main {
                 new Importador(nombres[0], transiciones[0], tiempos[0], monitor, MAX_INVARIANTES),
                 new Cargador(nombres[1], transiciones[1], tiempos[1], monitor),
                 new Cargador(nombres[2], transiciones[2], tiempos[2], monitor),
-                new Filtro(nombres[3], transiciones[3], tiempos[3], monitor),
-                new Filtro(nombres[4], transiciones[4], tiempos[4], monitor),
-                new Redimensionador(nombres[5], transiciones[5], tiempos[5], monitor),
-                new Redimensionador(nombres[6], transiciones[6], tiempos[6], monitor),
+                new Mejorador(nombres[3], transiciones[3], tiempos[3], monitor),
+                new Mejorador(nombres[4], transiciones[4], tiempos[4], monitor),
+                new Cortador(nombres[5], transiciones[5], tiempos[5], monitor),
+                new Cortador(nombres[6], transiciones[6], tiempos[6], monitor),
                 new Exportador(nombres[7], transiciones[7], tiempos[7], monitor)
         };
     }

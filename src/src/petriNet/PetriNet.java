@@ -3,7 +3,6 @@ package src.petriNet;
 import src.exception.PInvariantesException;
 import src.utils.Red;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class PetriNet {
@@ -16,7 +15,6 @@ public class PetriNet {
     private int[] marcado;                      // Estado actual de la red, definido por los tokens en cada plaza.
     private final int[] vector;                 // Vector de disparo que indica qué transición se va a disparar.
     private final long[] timeStamp;             // Vector que guarda el tiempo en que se habilito una transicion temporal.
-    private final long[][] tiempos;             // Matriz con los valores de Alfa (columna 0) y Beta (columna 1) para todas las transiciones
     private final int[] ventanaTiempos;         // Vector utilizado para el calculo de la ventana de tiempo:
 
     /**
@@ -24,7 +22,7 @@ public class PetriNet {
      * Define la matriz de incidencia, el marcado inicial, el vector de disparo y las transiciones habilitadas.
      */
     public PetriNet(Red tipo) {
-        // Define la matriz de incidencia.
+        // Define la matriz de incidencia para el calculo del nuevo marcado
         matrizIncidencia = new int[][]{
                 {1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                 {0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -57,7 +55,7 @@ public class PetriNet {
         ventanaTiempos = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         Red tipo1 = Objects.requireNonNullElse(tipo, Red.SIN_TIEMPOS);
 
-        tiempos = new long[cantidadTransiciones][2];
+        long[][] tiempos = new long[cantidadTransiciones][2];
         for (int i = 0; i < tiempos.length; i++) {
             tiempos[i][0] = -1L;
             tiempos[i][1] = Long.MAX_VALUE;
@@ -127,13 +125,8 @@ public class PetriNet {
 
                 int[] nuevoMarcado = operar(transicion);
 
-                if (Arrays.stream(nuevoMarcado).anyMatch(valor -> valor < 0)) {
-                    System.out.println("Los valores del marcado no pueden ser negativos.");
-                    return false;
-                }
-
                 // Verifica que no se hayan corrompido los invariantes de plaza.
-                if (!verificarInvariantesPlaza()) {
+                if (!verificarInvariantesPlaza(nuevoMarcado)) {
                     // Actualiza el marcado y las transiciones habilitadas según los tokens disponibles.
                     actualizarHabilitadas(nuevoMarcado);
                     return true;
@@ -204,7 +197,7 @@ public class PetriNet {
      *
      * @return `true` si los invariantes no se cumplen, `false` si son válidos.
      */
-    public boolean verificarInvariantesPlaza() {
+    public boolean verificarInvariantesPlaza(int[] nuevoMarcado) {
         /*
             P1 + P2 = 1
             P4 + P5 = 1
@@ -215,21 +208,21 @@ public class PetriNet {
             P15 + P16 + P17 = 1
             P19 + P20 = 1
          */
-        if (plazas[1].getTokens() + plazas[2].getTokens() != 1) {
+        if (nuevoMarcado[1] + nuevoMarcado[2] != 1) {
             return true;
-        } else if (plazas[4].getTokens() + plazas[5].getTokens() != 1) {
+        } else if (nuevoMarcado[4] + nuevoMarcado[5] != 1) {
             return true;
-        } else if (plazas[2].getTokens() + plazas[3].getTokens() + plazas[4].getTokens() + plazas[19].getTokens() != 3) {
+        } else if (nuevoMarcado[2] + nuevoMarcado[3] + nuevoMarcado[4] + nuevoMarcado[19] != 3) {
             return true;
-        } else if (plazas[7].getTokens() + plazas[8].getTokens() + plazas[12].getTokens() != 1) {
+        } else if (nuevoMarcado[7] + nuevoMarcado[8] + nuevoMarcado[12] != 1) {
             return true;
-        } else if (plazas[10].getTokens() + plazas[11].getTokens() + plazas[13].getTokens() != 1) {
+        } else if (nuevoMarcado[10] + nuevoMarcado[11] + nuevoMarcado[13] != 1) {
             return true;
-        } else if (plazas[8].getTokens() + plazas[9].getTokens() + plazas[10].getTokens() + plazas[12].getTokens() + plazas[13].getTokens() != 2) {
+        } else if (nuevoMarcado[8] + nuevoMarcado[9] + nuevoMarcado[10] + nuevoMarcado[12] + nuevoMarcado[13] != 2) {
             return true;
-        } else if (plazas[15].getTokens() + plazas[16].getTokens() + plazas[17].getTokens() != 1) {
+        } else if (nuevoMarcado[15] + nuevoMarcado[16] + nuevoMarcado[17] != 1) {
             return true;
-        } else return plazas[19].getTokens() + plazas[20].getTokens() != 1;
+        } else return nuevoMarcado[19] + nuevoMarcado[20] != 1;
     }
 
     /**
@@ -262,7 +255,7 @@ public class PetriNet {
                 }
             }
 
-            if (tiempos[i][0]!=-1) {
+            if (transiciones[i].getAlfa()!=-1) {
                 if (estabanSensibilizadas[i] == 0 && transiciones[i].estaHabilitada() == 1) {
                     // Transición habilitada por primera vez
                     timeStamp[i] = System.currentTimeMillis();
@@ -322,10 +315,6 @@ public class PetriNet {
 
     public long[] getTimeStamp() {
         return timeStamp;
-    }
-
-    public long[][] getTiempos() {
-        return tiempos;
     }
 
     public int[] getVentanaTiempos() {

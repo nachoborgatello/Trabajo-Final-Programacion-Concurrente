@@ -11,7 +11,6 @@ public class Plaza {
         this.tokens = tokens;
     }
 
-    // Setters
     public void setTokens(int tokens) {
         if (tokens < 0) {
             throw new IllegalArgumentException("Tokens no pueden ser negativos.");
@@ -19,7 +18,6 @@ public class Plaza {
         this.tokens = tokens;
     }
 
-    // Getters
     public int getTokens() {
         return tokens;
     }

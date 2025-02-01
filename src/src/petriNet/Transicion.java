@@ -20,7 +20,6 @@ public class Transicion {
         return esInmediata;
     }
 
-    // Getters
     public String getNombre() {
         return nombre;
     }

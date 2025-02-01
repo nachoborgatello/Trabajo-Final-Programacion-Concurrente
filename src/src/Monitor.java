@@ -95,7 +95,7 @@ public class Monitor {
                 // Incrementa el contador de disparos para la transición actual.
                 contarDisparo(transicion);
 
-                System.out.printf("Se disparo la transicion %d\n",transicion);
+                System.out.println(Thread.currentThread().getName() + " disparo la transicion " + transicion);
 
                 // Obtiene las transiciones habilitadas después del disparo.
                 int[] sensibilizadas = petriNet.getSensibilizadas();
@@ -136,7 +136,7 @@ public class Monitor {
                     if (petriNet.getVentanaTiempos()[transicion]==1) {
                         // 2. El tiempo alfa aún no se ha cumplido, por lo que el hilo debe esperar un tiempo igual a alfa - ahora antes de volver a intentar disparar.
                         long ahora = System.currentTimeMillis();
-                        long tiempo = (petriNet.getTimeStamp()[transicion]+petriNet.getTiempos()[transicion][0])-ahora;
+                        long tiempo = (petriNet.getTimeStamp()[transicion]+petriNet.getTransiciones()[transicion].getAlfa())-ahora;
                         mutex.release();
                         try {
                             TimeUnit.MILLISECONDS.sleep(tiempo);

@@ -18,12 +18,11 @@ public class PetriNetTest {
     private PetriNet petriNetSinTiempo;
     private PetriNet petriNetConTiempo;
     private Importador importador;
-    private Monitor monitor;
 
     @Before
     public void setUp() throws IOException {
         petriNetSinTiempo = new PetriNet(Red.SIN_TIEMPOS);
-        monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO,0,Red.TEMPORAL);
+        Monitor monitor = new Monitor(new Log("log/log.txt"), Politica.BALANCEADA, Segmento.NINGUNO, 0, Red.TEMPORAL);
         importador = new Importador("Importador-1", new int[]{0}, 1L, monitor,1);
         petriNetConTiempo = monitor.getPetriNet();
     }
