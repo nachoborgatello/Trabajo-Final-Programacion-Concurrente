@@ -2,6 +2,7 @@ package src.procesos;
 
 import src.Monitor;
 import src.exception.PInvariantesException;
+import src.exception.TemporalException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +50,7 @@ public class Cortador extends Proceso {
             } catch (InterruptedException e) {
                 System.err.println(getNombre() + ": Proceso interrumpido.");
                 break;
-            } catch (PInvariantesException e){
+            }  catch (PInvariantesException | TemporalException e){
                 System.err.println(getNombre() + ": Error durante el disparo de transición: " + e.getMessage());
                 break;
             }

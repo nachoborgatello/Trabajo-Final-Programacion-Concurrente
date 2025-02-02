@@ -121,7 +121,6 @@ public class Main {
      * @param threads Array con los hilos en ejecución.
      */
     private static void pararProcesos(Thread[] threads) {
-        // Notifica a los procesos que deben detenerse
         for (Thread thread : threads) {
             try {
                 thread.join();

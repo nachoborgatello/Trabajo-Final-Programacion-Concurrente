@@ -1,5 +1,6 @@
 package src;
 
+import src.exception.TemporalException;
 import src.petriNet.PetriNet;
 import src.utils.Politica;
 import src.utils.Red;
@@ -158,6 +159,8 @@ public class Monitor {
                         long ahora = System.currentTimeMillis();
                         System.out.println(ahora-petriNet.getTimeStamp()[transicion]);
                         // ¿Puedo liberar el mutex y continuar?
+                        mutex.release(); // Libera el semáforo al salir del monitor.
+                        throw new TemporalException();
                     }
                 }
             }

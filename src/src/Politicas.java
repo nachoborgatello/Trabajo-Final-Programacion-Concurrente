@@ -76,28 +76,10 @@ public class Politicas {
                 transicionSeleccionada=indices.get(rand.nextInt(indices.size()));
                 break;
             case BALANCEADA:
-                /*
-                    Balance en la etapa de Cargar
-                 */
-                if(transicionesHabilitadas[2]==1 && disparos[1]!=0){
-                    double relacion = disparos[2]/disparos[1];
-                    if (relacion<1){
-                        return 2;
-                    }
-                }
-                /*
-                    Balance en la etapa de Mejorar
-                 */
-                if(transicionesHabilitadas[6]==1 && disparos[5]!=0){
-                    double relacion = disparos[6]/disparos[5];
-                    if (relacion<1){
-                        return 6;
-                    }
-                }
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
                 int i = 1;
                 while (i < cantidadTransiciones) {
-                    if (transicionesHabilitadas[i] == 1 && disparos[i] < minValue && i!=2 && i!=6) {
+                    if (transicionesHabilitadas[i] == 1 && disparos[i] < minValue) {
                         minValue = disparos[i];      // Actualiza el valor mínimo con el número de disparos de la transición actual.
                         transicionSeleccionada = i;  // Guarda el índice de la transición con menos disparos.
                     }
@@ -124,29 +106,10 @@ public class Politicas {
                     }
                 }
                 // Recorre todas las transiciones para encontrar la habilitada con menor cantidad de disparos.
-                // Esta etapa es igual a la Politica BALANCEADA.
-                /*
-                    Balance en la etapa de Cargar
-                 */
-                if(transicionesHabilitadas[2]==1 && disparos[1]!=0){
-                    double relacion = disparos[2]/disparos[1];
-                    if (relacion<1){
-                        return 2;
-                    }
-                }
-                /*
-                    Balance en la etapa de Mejorar
-                 */
-                if(transicionesHabilitadas[6]==1 && disparos[5]!=0){
-                    double relacion = disparos[6]/disparos[5];
-                    if (relacion<1){
-                        return 6;
-                    }
-                }
                 int j = 1;
                 while (j < cantidadTransiciones) {  // Recorre todas las transiciones hasta cantidadTransiciones - 1.
                     // Verifica si la transición está habilitada y no es la misma que la transición priorizada.
-                    if (transicionesHabilitadas[j] == 1 && j != transicion && j!=2 && j!=6) {
+                    if (transicionesHabilitadas[j] == 1 && j != transicion) {
                         if (disparos[j] < minValue) {
                             minValue = disparos[j];      // Actualiza el valor mínimo con el número de disparos de la transición actual.
                             transicionSeleccionada = j;  // Guarda el índice de la transición con menos disparos.
