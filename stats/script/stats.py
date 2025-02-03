@@ -1,5 +1,5 @@
 # Nombre del archivo
-nombre_archivo = "log_Importador-1.txt"
+nombre_archivo = "stats\log_Cargador-1.txt"
 
 # Función para leer números de un archivo y calcular el promedio
 def calcular_promedio_desde_archivo(nombre_archivo):
@@ -17,4 +17,4 @@ def calcular_promedio_desde_archivo(nombre_archivo):
 if __name__ == "__main__":
     resultado = calcular_promedio_desde_archivo(nombre_archivo)
     if resultado is not None:
-        print(f"El promedio de los números es: {resultado}")
+        print(f"El promedio de los tiempos es: {resultado}")

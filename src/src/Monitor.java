@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Monitor {
 
-    private volatile boolean detener = false;
+    private boolean detener = false;
 
     private final Semaphore mutex;          // Semáforo binario para garantizar la exclusión mutua.
     private final PetriNet petriNet;        // Instancia de la red de Petri que se gestionará.
@@ -206,7 +206,7 @@ public class Monitor {
     /**
      * Detiene la ejecución de los hilos en el monitor.
      */
-    public void detenerHilos() {
+    private void detenerHilos() {
         detener = true;
     }
 

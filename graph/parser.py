@@ -22,7 +22,7 @@ def parse_marked_lines(file_path):
 
     return resultados
 
-file_path = 'kts\m10.kts'
+file_path = 'graph\kts\m10.kts'
 parsed_results = parse_marked_lines(file_path)
 
 max_sum = max(parsed_results, key=lambda x: x[1])

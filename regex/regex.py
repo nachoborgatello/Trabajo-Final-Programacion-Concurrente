@@ -1,6 +1,6 @@
 import re
 
-path = "log/log__BALANCEADA_NINGUNO_0.0_SIN_TIEMPOS.txt"
+path = "log/log__PRIORITARIA_IZQUIERDA_0.8_TEMPORAL.txt"
 
 def reemplazar_numeros_por_letras(archivo_entrada, archivo_salida):
     # Definir los reemplazos

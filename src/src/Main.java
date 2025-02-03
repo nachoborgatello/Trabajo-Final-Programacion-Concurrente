@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     private static final int MAX_INVARIANTES = 200;              // Cantidad máxima de invariantes
-    private static final Politica politica = Politica.BALANCEADA; // Politica implementada durante la ejecucion de la red
-    private static final Segmento segmento = Segmento.NINGUNO;     // Segmento a priorizar de la etapa seleccionada
-    private static final double prioridad = 0;                   // Prioridad dada al segmento
-    private static final Red red = Red.SIN_TIEMPOS;                // Tipo de Red de Petri a considerar durante la ejecucion
+    private static final Politica politica = Politica.PRIORITARIA; // Politica implementada durante la ejecucion de la red
+    private static final Segmento segmento = Segmento.IZQUIERDA;     // Segmento a priorizar de la etapa seleccionada
+    private static final double prioridad = 0.8;                   // Prioridad dada al segmento
+    private static final Red red = Red.TEMPORAL;                // Tipo de Red de Petri a considerar durante la ejecucion
 
     public static void main(String[] args) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
